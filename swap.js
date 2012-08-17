@@ -41,6 +41,10 @@ fileLocation = Locations.BASE_DIR + '/';
 
 // Routes
 
+app.get('/setup', function(req, res) {
+  res.render('setup', { step: null, layout: 'layout_protocols' });
+});
+
 require('./server/home.js');
 require('./server/setup.js');
 require('./server/utils.js');
