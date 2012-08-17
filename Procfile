@@ -1,1 +1,1 @@
-web: node swap.js
+swap: node swap.js
