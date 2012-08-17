@@ -4,6 +4,10 @@
  */
 
 var express = require('express');
+fs          = require('fs');
+
+// load library
+var Locations           = require('./public/javascripts/credsystem/utils/Locations.js');
 
 
 app = module.exports = express.createServer();
@@ -36,9 +40,15 @@ app.configure('production', function(){
 });
 
 
+// init locations
+fileLocation = Locations.BASE_DIR + '/';
+
+
 // Routes
 
-require('./swap/home.js');
+require('./server/home.js');
+require('./server/setup.js');
+require('./server/utils.js');
 
 
 var port = process.env.PORT || 5000;

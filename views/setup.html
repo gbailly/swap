@@ -1,0 +1,95 @@
+<div class="container">
+  <div class="row">
+	
+    <div class="span8">
+      <div class="hero-unit">
+				<h1>Setup the environment</h1>
+				<p>Here you can obtain a new master secret required to prove your identity later</p>
+			</div>
+    </div><!--/span-->
+
+		<div class="span4">
+			<form class="well form-horizontal" action="javascript:CredSystem.generateMasterSecret()">
+				<legend>Please fill in...</legend>
+				
+				<p>Here you can generate a new master secret. Optionally, you can also ask to receive a new pseudonym linked to this master secret. For this you need to enter a name for the pseudonym in the box below.</p>
+				
+				<br />
+				
+				<table>
+				  <tbody>
+				    <tr>
+				      <td class="span8">Pseudonym</td>
+				      <td><input type="text" class="input-medium" id="nym"></td>
+				    </tr>
+				  </tbody>
+				</table>
+				
+				<br />
+				
+				<input type="submit" value="Generate now">
+			</form>
+			
+			<!-- display the progression -->
+			<div style="display:none;" id="progression_container">
+			</div>
+	 	</div><!--/span-->
+	</div><!--/row-->
+</div><!--/.fluid-container-->
+
+
+<!-- Generation protocol -->
+<input type="hidden" id="step" value="<%= step %>" />
+<script type="text/javascript">
+	var step = document.getElementById("step").value;
+	if(step == "gen") {
+		// init system parameters and group parameters
+		var groupParams = Locations.initSystem();
+
+		// create new master secret
+		var masterSecret = new MasterSecret(null, groupParams, null, null);
+
+		// get the name entered and create a new pseudonym
+		var nymMap = null;
+		var nymName = document.getElementById("nym").value;
+		if(nymName != null && Utils.trimString(nymName) != "") {
+			nymMap = new Object();
+			nymMap[nymName] = new Nym(groupParams, masterSecret.getValue(), nymName);
+		}
+
+		// update the master secret
+		masterSecret.setNymMap(nymMap);
+
+		// ask the user to save the generated master secret
+	  var successBox = document.getElementById("progression_container");
+	  successBox.setAttribute("class", "alert alert-success");
+		successBox.setAttribute("style", "display:block;");
+
+		var form = document.createElement("form");
+		form.setAttribute("class", "form-inline");
+		form.setAttribute("action", "javascript:Store.save(masterSecret)");
+
+		form.appendChild(document.createElement("br"));
+
+		var textContainer = document.createElement("p");
+		var text = document.createTextNode("Congratulations, you have generated a new master secret."
+			+ " If you want to save it, please enter a name in the box below and click the button.");
+		textContainer.appendChild(text);
+		form.appendChild(textContainer);
+
+		var masterSecretName = document.createElement("input");
+		masterSecretName.setAttribute("type", "text");
+		masterSecretName.setAttribute("id", "master_secret_name");
+		form.appendChild(masterSecretName);
+
+		form.appendChild(document.createElement("br"));
+		form.appendChild(document.createElement("br"));
+
+		var button = document.createElement("input");
+		button.setAttribute("type", "submit");
+		button.setAttribute("value", "Submit");
+		form.appendChild(button);
+
+	  successBox.appendChild(form);
+	}
+</script>
