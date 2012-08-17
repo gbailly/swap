@@ -1,17 +1,25 @@
-
-/**
- * Module dependencies.
- */
-
+// load modules
 var express = require('express');
 fs          = require('fs');
+DOMParser   = require('xmldom').DOMParser;
+
+// load dependencies
+prng_newstate = require('./public/javascripts/libraries/jsbn/prng4.js');
+BigInteger    = require('./public/javascripts/libraries/jsbn/jsbn.js');
+SecureRandom  = require('./public/javascripts/libraries/jsbn/rng.js');
+CryptoJS      = require('./public/javascripts/libraries/crypto-js/sha256.js');
 
 // load library
+var Attribute           = require('./public/javascripts/swap/dm/Attribute.js');
+var AttributeStructure  = require('./public/javascripts/swap/dm/structure/AttributeStructure.js');
 var CredentialStructure = require('./public/javascripts/swap/dm/structure/CredentialStructure.js');
 var GroupParameters     = require('./public/javascripts/swap/utils/GroupParameters.js');
+var IssuanceSpec        = require('./public/javascripts/swap/issuance/IssuanceSpec.js');
 var IssuerKeyPair       = require('./public/javascripts/swap/key/IssuerkeyPair.js');
 var IssuerPrivateKey    = require('./public/javascripts/swap/key/IssuerPrivateKey.js');
 var IssuerPublicKey     = require('./public/javascripts/swap/key/IssuerPublicKey.js');
+var Parser              = require('./public/javascripts/swap/utils/Parser.js');
+var StructureStore      = require('./public/javascripts/swap/utils/StructureStore.js');
 var SystemParameters    = require('./public/javascripts/swap/utils/SystemParameters.js');
 
 // load credential system
@@ -44,8 +52,8 @@ app.configure('production', function(){
 
 
 // init locations
-fileLocation = Locations.BASE_DIR + '/';
-issuerPrivKeyLocation = "/private/IssuerPrivateKey.xml";
+fileLocation = Locations.BASE_DIR;
+issuerPrivKeyLocation = "strong/private/IssuerPrivateKey.xml";
 
 
 // Routes

@@ -1,11 +1,11 @@
 Locations = function() {
 };
 
-Locations.BASE_DIR = "resources/strong";
-Locations.SYSTEM_PARAMETERS_LOCATION = "/public/SystemParameters.xml";
-Locations.GROUP_PARAMETERS_LOCATION = "/public/GroupParameters.xml";
-Locations.ISSUER_PUBLIC_KEY_LOCATION = "/public/IssuerPublicKey.xml";
-Locations.CREDENTIAL_STRUCTURE_LOCATION = "/public/CredStruct_UtopiaHiddenValues.xml";
+Locations.BASE_DIR = "resources/";
+Locations.SYSTEM_PARAMETERS_LOCATION = "strong/public/SystemParameters.xml";
+Locations.GROUP_PARAMETERS_LOCATION = "strong/public/GroupParameters.xml";
+Locations.ISSUER_PUBLIC_KEY_LOCATION = "strong/public/IssuerPublicKey.xml";
+Locations.CREDENTIAL_STRUCTURE_LOCATION = "specification/CredStruct.xml";
 
 
 Locations.init = function(objectLocation) {
@@ -18,7 +18,7 @@ Locations.init = function(objectLocation) {
     } else { // IE 5/6
       xhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xhttp.open("GET", "/loadxmldoc" + objectLocation, false);
+    xhttp.open("GET", "/loadxmldoc/" + objectLocation, false);
     xhttp.send();
     objectXMLDoc = xhttp.responseXML;
   }

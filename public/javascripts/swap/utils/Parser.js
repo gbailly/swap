@@ -50,7 +50,7 @@ Parser.prototype.normalize = function(string) {
 };
 
 Parser.prototype.parseCredentialStructure = function(xmlDoc) {
-  // TODO (pbi/frp) there should be a reference to the issuer public key
+  // TODO there should be a reference to the issuer public key
   // in the credential! Then, this reference can be removed.
   // Parse attributes
   var attributes = xmlDoc.getElementsByTagName("Attributes")[0];
@@ -82,24 +82,20 @@ Parser.prototype.parseAttributes = function(attributes, implementation) {
     var attribute = attributesList.item(i);
     var attributeAttr = attribute.attributes;
     var attributeName = attributeAttr.getNamedItem("name").value;
-    var attributeDataType = attributeAttr.getNamedItem("type").value
-    .toUpperCase();
+    var attributeDataType = attributeAttr.getNamedItem("type").value.toUpperCase();
     // scanning enumerated attributes
     if (attributeDataType == "ENUM") {
-      var attributeTypeValues = attribute
-      .getElementsByTagName("EnumValue");
+      var attributeTypeValues = attribute.getElementsByTagName("EnumValue");
       for ( var j = 0; j < attributeTypeValues.length; j++) {
         var attributeTypeValue = attributeTypeValues[j].childNodes[0].nodeValue;
-        var key = attributeName + Constants.DELIMITER
-        + attributeTypeValue;
-        primeFactorsObject[key] = new PrimeEncodingFactor(
-          attributeName, attributeTypeValue);
+        var key = attributeName + Constants.DELIMITER + attributeTypeValue;
+        primeFactorsObject[key] = new PrimeEncodingFactor(attributeName, attributeTypeValue);
       }
-    } else
+    } else {
       dataTypes[i] = DataType[attributeDataType];
+		}
     names[i] = attributeName;
-    issuanceModes[i] = IssuanceMode[attributeAttr
-    .getNamedItem("issuanceMode").value.toUpperCase()];
+    issuanceModes[i] = IssuanceMode[attributeAttr.getNamedItem("issuanceMode").value.toUpperCase()];
     nameObject[names[i]] = i;
   }
 
@@ -109,22 +105,21 @@ Parser.prototype.parseAttributes = function(attributes, implementation) {
     var tempObject = new Object();
     var attributeNames = new Array();
 
-    var primeFactors = primeEncodingsList.item(i).getElementsByTagName(
-      "PrimeFactor");
+    var primeFactors = primeEncodingsList.item(i).getElementsByTagName("PrimeFactor");
     for ( var j = 0; j < primeFactors.length; j++) {
       var primeFactor = primeFactors.item(j);
       var primeFactorAttributes = primeFactor.attributes;
       var attributeName = primeFactorAttributes.getNamedItem("attName").value;
       var attributeValue = primeFactorAttributes.getNamedItem("attValue").value;
-      var prime = new BigInteger(this.normalize(primeFactor.childNodes
-        .item(0).nodeValue));
+      var prime = new BigInteger(this.normalize(primeFactor.childNodes.item(0).nodeValue));
       var key = attributeName + Constants.DELIMITER + attributeValue;
       var primeEncodingFactor = primeFactorsObject[key];
       primeEncodingFactor.setPrimeFactor(prime);
       tempObject[key] = primeEncodingFactor;
       // check if this attribute is already in the list of attributes
-      if (attributeNames.indexOf(attributeName) < 0)
+      if (attributeNames.indexOf(attributeName) < 0) {
         attributeNames.push(attributeName);
+			}
     }
 
     // Matching attributes to PrimeEncodings
@@ -135,10 +130,8 @@ Parser.prototype.parseAttributes = function(attributes, implementation) {
       var index = nameObject[attributeName];
       if (primeEncodingIssuanceMode == null) {
         primeEncodingIssuanceMode = issuanceModes[index];
-        var primeEncodingName = primeEncodingAttributes
-        .getNamedItem("name").value;
-        numValues[index] = primeEncodingAttributes
-        .getNamedItem("numValues").value;
+        var primeEncodingName = primeEncodingAttributes.getNamedItem("name").value;
+        numValues[index] = primeEncodingAttributes.getNamedItem("numValues").value;
         if (Object.keys(tempObject).length > numValues[index])
           ;// EXCEPTION
         nameObject[primeEncodingName] = index;
@@ -170,11 +163,9 @@ Parser.prototype.parseAttributes = function(attributes, implementation) {
   for ( var i = 0; i < names.length; i++) {
     if (names[i] == "")
       continue;
-    var attributeStructure = new AttributeStructure(names[i],
-      pubKeyIndexes[i], issuanceModes[i], dataTypes[i]);
+    var attributeStructure = new AttributeStructure(names[i], pubKeyIndexes[i], issuanceModes[i], dataTypes[i]);
     // setting object of prime encoded values
-    attributeStructure.setPrimeEncodedFactors(finalObject[names[i]],
-      numValues[i]);
+    attributeStructure.setPrimeEncodedFactors(finalObject[names[i]], numValues[i]);
     attributeStructures.push(attributeStructure);
   }
 

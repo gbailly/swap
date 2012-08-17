@@ -1,6 +1,6 @@
 // load file
-app.get('/loadxmldoc/:directory/:filename', function(req, res) {
-  var fn = fileLocation + req.params.directory + '/' + req.params.filename;
+app.get('/loadxmldoc/:directory/:subdirectory/:filename', function(req, res) {
+  var fn = fileLocation + req.params.directory + '/' + req.params.subdirectory + req.params.filename;
   try {
     var data = fs.readFileSync(fn, 'utf8');
     console.info('reading ' + fn);
