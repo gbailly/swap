@@ -19,9 +19,7 @@ app.configure(function(){
   app.register('.html', require('ejs'));
   app.set('views', __dirname + '/views');
   app.set('view engine', 'html');
-  app.set('view options', {
-    layout: false
-  });
+  app.set('view options', { layout: false });
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
@@ -29,10 +27,7 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
-  app.use(express.errorHandler({
-    dumpExceptions: true, 
-    showStack: true
-  }));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){

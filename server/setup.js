@@ -1,5 +1,5 @@
 app.get('/setup', function(req, res) {
-  res.render('setup', { step: null, layout: 'layout_protocols' });
+res.render('index', { layout: 'layout_default' });
 });
 
 // generate a new master secret
