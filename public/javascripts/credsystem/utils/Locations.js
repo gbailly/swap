@@ -1,7 +1,8 @@
 Locations = function() {
 };
 
-Locations.BASE_DIR = "http://swap-crypto.herokuapp.com/resources/strong";
+//Locations.BASE_DIR = "http://swap-crypto.herokuapp.com/resources/strong";
+Locations.BASE_DIR = "resources/strong";
 Locations.SYSTEM_PARAMETERS_LOCATION = "/public/SystemParameters.xml";
 Locations.GROUP_PARAMETERS_LOCATION = "/public/GroupParameters.xml";
 
