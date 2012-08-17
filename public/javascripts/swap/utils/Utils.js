@@ -49,6 +49,27 @@ Utils.modPow = function(base, exponent, modulus) {
 	}
 };
 
+Utils.encodeDate = function(date) {
+	var referenceDate = new Date("1900/01/01");
+
+	var dateMillisTemp = Date.parse(date);
+	var dateMillis = new BigInteger("" + Math.abs(dateMillisTemp));
+	if (dateMillisTemp < 0) {
+		dateMillis = dateMillis.negate();
+	}
+
+	var referenceDateMillisTemp = Date.parse(referenceDate);
+	var referenceDateMillis = new BigInteger("" + Math.abs(referenceDateMillisTemp));
+	if (referenceDateMillisTemp < 0) {
+		referenceDateMillis = referenceDateMillis.negate();
+	}
+
+	var diffMillis = dateMillis.subtract(referenceDateMillis).abs();
+	var diffDays = diffMillis.divide(new BigInteger("86400000"));
+
+	return diffDays;
+};
+
 
 if(typeof exports != 'undefined')
 	module.exports = Utils;

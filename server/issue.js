@@ -9,6 +9,7 @@ app.get('/issue', function(req, res) {
 
 // issue a credential
 app.post('/issue', function(req, res) {
+	console.log("success");/*
   var optionalValue = req.param('optional', null);
   if(optionalValue == "round0") {
     // recover values from JSON string
@@ -43,5 +44,5 @@ app.post('/issue', function(req, res) {
       fixedBaseWindowingMap: '{}', 
       layout: 'layout_protocols'
     });
-  }
+  }*/
 });

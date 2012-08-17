@@ -1,8 +1,11 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+label.label_radio {
+	float:left;
+	clear:none;
+	display:block;
+	padding: 1px 1em 0 1px;
 }
-
-a {
-  color: #00B7FF;
+input.radio {
+	float:left;
+	clear:none;
+	margin: 7px 0 0 2px;
 }

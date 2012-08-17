@@ -64,11 +64,11 @@ CredSystem.issueCredential = function() {
 	var recipient = new Recipient(issuanceSpec, null, null, null, masterSecret, valuesRecipient);
 	
 	// store the recipient in temporary memory for later use
-	Comm.storeRecipient(recipient);
+	Store.save(recipient);
 	
 	// update progression
-	updateProgression(5);
+	Utils.updateProgression(5);
 	
 	// run the issuance protocol
-	Comm.postToURL('/issue', valuesIssuer.toJSONString(), "round0");
+	Utils.postToURL('/issue', valuesIssuer.toJSONString(), "round0");
 };

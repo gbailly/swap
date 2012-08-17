@@ -2,9 +2,10 @@ Locations = function() {
 };
 
 Locations.BASE_DIR = "resources/";
-Locations.SYSTEM_PARAMETERS_LOCATION = "strong/public/SystemParameters.xml";
-Locations.GROUP_PARAMETERS_LOCATION = "strong/public/GroupParameters.xml";
-Locations.ISSUER_PUBLIC_KEY_LOCATION = "strong/public/IssuerPublicKey.xml";
+Locations.SECURITY_LEVEL = "strong";
+Locations.SYSTEM_PARAMETERS_LOCATION = "/public/SystemParameters.xml";
+Locations.GROUP_PARAMETERS_LOCATION = "/public/GroupParameters.xml";
+Locations.ISSUER_PUBLIC_KEY_LOCATION = "/public/IssuerPublicKey.xml";
 Locations.CREDENTIAL_STRUCTURE_LOCATION = "specification/CredStruct.xml";
 
 
@@ -18,20 +19,28 @@ Locations.init = function(objectLocation) {
     } else { // IE 5/6
       xhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xhttp.open("GET", "/loadxmldoc/" + objectLocation, false);
+		if(Utils.stringStartsWith(objectLocation, "/public")) {
+			xhttp.open("GET", "/loadxmldoc/" + Locations.SECURITY_LEVEL + objectLocation, false);
+		} else {
+			xhttp.open("GET", "/loadxmldoc/" + objectLocation, false);
+		}
     xhttp.send();
     objectXMLDoc = xhttp.responseXML;
-  }
-  else {
+  } else {
     // nodeJS case
     var data = null;
-    var fn = Locations.BASE_DIR + objectLocation;
+    var filename;
+		if(Utils.stringStartsWith(objectLocation, "/public")) {
+			filename = Locations.BASE_DIR + Locations.SECURITY_LEVEL + objectLocation;
+		} else {
+			filename = Locations.BASE_DIR + objectLocation;
+		}
     try {
-      console.info('Loading ' + fn);
-      data = fs.readFileSync(fn, 'utf8');
+      console.info('Loading ' + filename);
+      data = fs.readFileSync(filename, 'utf8');
     }
     catch (err) {
-      console.error("There was an error opening the file " + fn);
+      console.error("There was an error opening the file " + filename);
       console.log(err);
     }
     objectXMLDoc = new DOMParser().parseFromString(data, 'text/xml');

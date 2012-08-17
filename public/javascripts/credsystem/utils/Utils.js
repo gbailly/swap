@@ -23,6 +23,20 @@ Utils.postToURL = function(url, jsonData, optionalValue) {
   form.submit();
 };
 
+Utils.stringToByteArray = function(string) {
+	var array = new Array();
+	var i;
+	for(i=0; i<string.length; i++) {
+		array.push(string.charCodeAt(i));
+	}
+	return array;
+};
+
+
+/**
+ * Operations on strings.
+ */
+
 Utils.trimString = function(string) {
 	return string.replace(/^\s+|\s+$/g, "");
 };
@@ -34,3 +48,39 @@ Utils.removeStringLastChars = function(string, n) {
 Utils.removeStringLastChar = function(string) {
 	return Utils.removeStringLastChars(string, 1);
 };
+
+Utils.stringStartsWith = function(string, prefix) {
+	return string.indexOf(prefix) == 0;
+};
+
+/*
+ * Operations for the views.
+ */
+
+Utils.updateProgression = function(percentage) {
+	var progressBarContainer = document.getElementById("progression_container");
+	progressBarContainer.setAttribute("class", "progress");
+	progressBarContainer.setAttribute("style", "display:inline;");
+
+	var msgContainer = document.getElementById("msg_container");
+	if(msgContainer == null) {
+		var msgContainer = document.createElement("p");
+		msgContainer.setAttribute("id", "msg_container");
+		var msg = document.createTextNode("Please wait while a new credential is being generated...");
+		msgContainer.appendChild(msg);
+		progressBarContainer.appendChild(msgContainer);
+	}
+
+	if(percentage == 100) {
+		progressBarContainer.removeChild(msgContainer);
+	}
+
+	var progressBar = document.getElementById("progress_bar");
+	if(progressBar == null) {
+		var progressBar = document.createElement("div");
+		progressBar.setAttribute("class", "bar");
+		progressBar.setAttribute("id", "progress_bar");
+		progressBarContainer.appendChild(progressBar);
+	}
+	progressBar.setAttribute("style", "width:" + percentage + "%;");
+}

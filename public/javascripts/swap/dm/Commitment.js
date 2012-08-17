@@ -22,6 +22,37 @@ Commitment = function(value, capR_0, capS, n, baseList, issuerPubKey) {
 	}
 };
 
+Commitment.prototype.getCommitmentValue = function() {
+	return this.value;
+}
+
+Commitment.prototype.getCapR = function() {
+	return this.baseList[0];
+};
+
+Commitment.prototype.getCapS = function() {
+	return this.capS;
+};
+
+Commitment.prototype.getN = function() {
+	return this.n;
+};
+
+Commitment.prototype.getNumBases = function() {
+	return this.numBases;
+};
+
+Commitment.prototype.getCommitment = function() {
+	return this.value;
+};
+
+Commitment.prototype.getMessageBase = function(i) {
+	if (i >= this.numBases || i < 0) {
+		return null;
+	}
+	return this.baseList[i];
+};
+
 Commitment.computeCommitment = function(groupParams, m, r) {
 	var g = groupParams.getG();
 	var h = groupParams.getH();
@@ -29,6 +60,7 @@ Commitment.computeCommitment = function(groupParams, m, r) {
 
 	return Utils.expMul(Utils.expMul(null, g, m, capGamma), h, r, capGamma);
 };
+
 
 if(typeof exports != 'undefined')
 	module.exports = Commitment;

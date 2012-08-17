@@ -15,29 +15,29 @@
 				  <tbody>
 				    <tr>
 				      <td class="span8">First name</td>
-				      <td class="span4"><input type="text" value="Guillaume" id="firstName"></td>
+				      <td class="span4"><input type="text" id="firstName"></td>
 				    </tr>
 					  <tr>
 					    <td class="span8">Last name</td>
-					    <td class="span4"><input type="text" value="Bailly" id="lastName"></td>
+					    <td class="span4"><input type="text" id="lastName"></td>
 					  </tr>
 					  <tr>
 					    <td class="span8">Gender</td>
 					    <td class="span4">
-								<input type="radio" name="gender" value="male" onclick="setGenderInformation(this.value)" style="float:left; clear:none; margin: 7px 0 0 2px;">
-								<label for="male" style="float:left; clear:none; display:block; padding: 7px 1em 0 1px;">M</label>
-								<input type="radio" name="gender" value="female" onclick="setGenderInformation(this.value)" style="float:left; clear:none; margin: 7px 0 0 2px;">
-								<label for="female" style="float:left; clear:none; display:block; padding: 7px 1em 0 1px;">F</label>
+								<input type="radio" name="gender" value="male" onclick="setGenderInformation(this.value)" class="radio">
+								<label for="male" class="label_radio">M</label>
+								<input type="radio" name="gender" value="female" onclick="setGenderInformation(this.value)" class="radio">
+								<label for="female" class="label_radio">F</label>
 								<input type="hidden" id="gender">
 							</td>
 					  </tr>
 					  <tr>
 					    <td class="span8">Date of birth</td>
-					    <td class="span4"><input type="text" value="1987/12/10" placeholder="YYYY/MM/DD" id="dob"></td>
+					    <td class="span4"><input type="text" placeholder="YYYY/MM/DD" id="dob"></td>
 					  </tr>
 					  <tr>
 					    <td class="span8">Nationality</td>
-					    <td class="span4"><input type="text" value="Belgian" id="nationality"></td>
+					    <td class="span4"><input type="text" id="nationality"></td>
 					  </tr>
 				  </tbody>
 				</table>

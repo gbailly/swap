@@ -21,9 +21,11 @@ var IssuerPublicKey     = require('./public/javascripts/swap/key/IssuerPublicKey
 var Parser              = require('./public/javascripts/swap/utils/Parser.js');
 var StructureStore      = require('./public/javascripts/swap/utils/StructureStore.js');
 var SystemParameters    = require('./public/javascripts/swap/utils/SystemParameters.js');
+var Utils               = require('./public/javascripts/swap/utils/Utils.js');
 
 // load credential system
 var Locations           = require('./public/javascripts/credsystem/utils/Locations.js');
+                          require('./public/javascripts/credsystem/utils/Utils.js');
 
 
 app = module.exports = express.createServer();
