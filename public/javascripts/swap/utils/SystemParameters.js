@@ -22,7 +22,7 @@ SystemParameters = function(l_n, l_Gamma, l_rho, l_m, l_res, l_e, l_ePrime, l_v,
 		/** Prime probability. */
     this.l_pt = l_pt;
 	
-	// this.checkConstraints();
+	this.checkConstraints();
 };
 
 SystemParameters.prototype.getL_n = function() {
@@ -76,27 +76,28 @@ SystemParameters.prototype.getL_r = function() {
 SystemParameters.prototype.getL_pt = function() {
 	return this.l_pt;
 };
-/*
- private void checkConstraints() {
-     if (l_e <= (l_Phi + l_H + Math.max(l_m + 4, l_prime_e + 2))) {
-         throw new IllegalArgumentException("constraint 1");
-     }
-     if (l_v <= (l_n + l_Phi + l_H + Math.max(l_m + l_r + 3, l_Phi + 2))) {
-         throw new IllegalArgumentException("constraint 2");
-     }
-     if (l_H < l_k) {
-         throw new IllegalArgumentException("constraint 3");
-     }
-     if (l_H >= l_e) {
-         throw new IllegalArgumentException("constraint 5");
-     }
-     if (l_prime_e >= l_e - l_Phi - l_H - 3) {
-         throw new IllegalArgumentException("constraint 6");
-     }
-     if (l_rho > l_m) {
-         throw new IllegalArgumentException("constraint 7");
-     }
- }*/
+
+SystemParameters.prototype.checkConstraints = function() {
+	if (this.l_e <= (this.l_Phi + this.l_H + Math.max(this.l_m + 4, this.l_ePrime + 2))) {
+		alert("Constraint 1 not respected");
+	}
+	if (this.l_v <= (this.l_n + this.l_Phi + this.l_H + Math.max(this.l_m + this.l_r + 3, this.l_Phi + 2))) {
+		alert("Constraint 2 not respected");
+	}
+	if (this.l_H < this.l_k) {
+		alert("Constraint 3 not respected");
+	}
+	if (this.l_H >= this.l_e) {
+		alert("Constraint 4 not respected");
+	}
+	if (this.l_ePrime >= this.l_e - this.l_Phi - this.l_H - 3) {
+		alert("Constraint 5 not respected");
+	}
+	if (this.l_rho > this.l_m) {
+		alert("Constraint 6 not respected");
+	}
+}
+
 
 if(typeof exports != 'undefined')
 	module.exports = SystemParameters;

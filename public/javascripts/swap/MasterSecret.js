@@ -32,5 +32,6 @@ MasterSecret.prototype.setDomNymTildeMap = function(domNymTildeMap) {
 	this.domNymTildeMap = domNymTildeMap;
 };
 
+
 if(typeof exports != 'undefined')
 	module.exports = MasterSecret;

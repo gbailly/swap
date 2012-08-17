@@ -7,6 +7,14 @@ var express = require('express');
 fs          = require('fs');
 
 // load library
+var CredentialStructure = require('./public/javascripts/swap/dm/structure/CredentialStructure.js');
+var GroupParameters     = require('./public/javascripts/swap/utils/GroupParameters.js');
+var IssuerKeyPair       = require('./public/javascripts/swap/key/IssuerkeyPair.js');
+var IssuerPrivateKey    = require('./public/javascripts/swap/key/IssuerPrivateKey.js');
+var IssuerPublicKey     = require('./public/javascripts/swap/key/IssuerPublicKey.js');
+var SystemParameters    = require('./public/javascripts/swap/utils/SystemParameters.js');
+
+// load credential system
 var Locations           = require('./public/javascripts/credsystem/utils/Locations.js');
 
 
@@ -37,12 +45,14 @@ app.configure('production', function(){
 
 // init locations
 fileLocation = Locations.BASE_DIR + '/';
+issuerPrivKeyLocation = "/private/IssuerPrivateKey.xml";
 
 
 // Routes
 
 require('./server/home.js');
 require('./server/setup.js');
+require('./server/issue.js');
 require('./server/utils.js');
 
 

@@ -49,5 +49,6 @@ Utils.modPow = function(base, exponent, modulus) {
 	}
 };
 
+
 if(typeof exports != 'undefined')
 	module.exports = Utils;

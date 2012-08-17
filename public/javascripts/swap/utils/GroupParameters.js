@@ -31,5 +31,6 @@ GroupParameters.prototype.getSystemParams = function() {
     return this.systemParams;
 };
 
+
 if(typeof exports != 'undefined')
 	module.exports = GroupParameters;

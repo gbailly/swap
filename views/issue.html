@@ -1,0 +1,229 @@
+<div class="container">
+  <div class="row">
+	
+    <div class="span8">
+      <div class="hero-unit">
+				<h1>Issue a Credential</h1>
+				<p>Here you can issue a new credential</p>
+			</div>
+    </div><!--/span-->
+
+		<div class="span4">
+			<form class="well form-inline" id="personal_data" action="javascript:CredSystem.issueCredential()">
+				<legend>Please fill in...</legend>
+				<table>
+				  <tbody>
+				    <tr>
+				      <td class="span8">First name</td>
+				      <td class="span4"><input type="text" value="Guillaume" id="firstName"></td>
+				    </tr>
+					  <tr>
+					    <td class="span8">Last name</td>
+					    <td class="span4"><input type="text" value="Bailly" id="lastName"></td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Gender</td>
+					    <td class="span4">
+								<input type="radio" name="gender" value="male" onclick="setGenderInformation(this.value)" style="float:left; clear:none; margin: 7px 0 0 2px;">
+								<label for="male" style="float:left; clear:none; display:block; padding: 7px 1em 0 1px;">M</label>
+								<input type="radio" name="gender" value="female" onclick="setGenderInformation(this.value)" style="float:left; clear:none; margin: 7px 0 0 2px;">
+								<label for="female" style="float:left; clear:none; display:block; padding: 7px 1em 0 1px;">F</label>
+								<input type="hidden" id="gender">
+							</td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Date of birth</td>
+					    <td class="span4"><input type="text" value="1987/12/10" placeholder="YYYY/MM/DD" id="dob"></td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Nationality</td>
+					    <td class="span4"><input type="text" value="Belgian" id="nationality"></td>
+					  </tr>
+				  </tbody>
+				</table>
+				
+				<br />
+				
+				<div id="private_data_choice">
+					<legend>Please choose...</legend>
+				</div>
+				
+				<br />
+				
+				<input type="submit" value="Submit">
+			</form>
+			<!-- display the progression -->
+			<div style="display:none;" id="progression_container">
+			</div>
+	 	</div><!--/span-->
+	</div><!--/row-->
+</div><!--/.fluid-container-->
+
+
+<input type="hidden" id="message" value="<%= message %>" />
+<input type="hidden" id="step" value="<%= step %>" />
+<input type="hidden" id="fixedBaseWindowingMap" value="<%= fixedBaseWindowingMap %>" />
+<script type="text/javascript">
+	// ask the user to choose an existing master secret
+	var masterSecretMap = Store.loadMasterSecretMap();
+	
+	var masterSecretSelectionList = document.createElement("select");
+	masterSecretSelectionList.setAttribute("id", "master_secret_selection_list");
+	
+	var option = null;
+	for(var key in masterSecretMap) {
+		option = document.createElement("option");
+		option.appendChild(document.createTextNode(key));
+		option.setAttribute("value", masterSecretMap[key].toJSONString());
+		masterSecretSelectionList.appendChild(option);
+	}
+	
+	var masterSecretSelectionListContainer = document.createElement("div");
+	masterSecretSelectionListContainer.setAttribute("class", "controls");
+	masterSecretSelectionListContainer.appendChild(masterSecretSelectionList);
+	
+	var masterSecretSelectionListLabel = document.createElement("label");
+	masterSecretSelectionListLabel.setAttribute("class", "control-label");
+	masterSecretSelectionListLabel.setAttribute("for", "master_secret_selection_list");
+	masterSecretSelectionListLabel.appendChild(document.createTextNode("Master secret"));
+	
+	var masterSecretGroupContainer = document.createElement("div");
+	masterSecretGroupContainer.setAttribute("class", "control-group");
+	masterSecretGroupContainer.appendChild(masterSecretSelectionListLabel);
+	masterSecretGroupContainer.appendChild(masterSecretSelectionListContainer);
+	
+	var personalData = document.getElementById("private_data_choice");
+	personalData.appendChild(masterSecretGroupContainer);
+	
+	
+	// Issuance protocol (client side)
+	var step = document.getElementById("step").value;
+		
+	if (step == "round1") {
+		// update progression
+		updateProgression(10);
+		
+    // recover message from JSON string
+    var messageJSONString = document.getElementById("message").value;
+    var messageJSONObject = eval('(' + messageJSONString + ')');
+    var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
+
+    // load recipient from temporary memory
+    var recipient = Comm.loadRecipient();
+
+		// init precomputed bases if necessary
+		if(Constants.FAST_EXPO) {
+	    // load fixed base windowing map
+	    var fixedBaseWindowingMapJSONString = document.getElementById("fixedBaseWindowingMap").value;
+	    var fixedBaseWindowingMapJSONObject = eval('(' + fixedBaseWindowingMapJSONString + ')')["fixedBaseWindowingMap"];
+	    // convert to map of FixedBaseWindowing objects
+	    var fixedBaseWindowingMap = new Object();
+	    for(var key in fixedBaseWindowingMapJSONObject) {
+				fixedBaseWindowingMap[key] = FixedBaseWindowing.fromJSONObject(fixedBaseWindowingMapJSONObject[key]);
+			}
+			recipient.setFixedBaseWindowingMap(fixedBaseWindowingMap);
+
+			// update progression
+			updateProgression(25);
+		}
+		
+    // execute round 1
+    var msgToIssuer = recipient.round1(msgFromIssuer);
+
+    // store recipient in temporary memory for later use
+    Comm.storeRecipient(recipient);
+
+		// update progression
+		updateProgression(60);
+		
+    // send message to issuer
+    var msgToIssuerJSONString = msgToIssuer.toJSONString();
+    Comm.postToURL('/issue', msgToIssuerJSONString, "round2");
+
+  } else if (step == "round3") {
+		// update progression
+		updateProgression(95);
+		
+    // recover message from JSON string
+    var messageJSONString = document.getElementById("message").value;
+    var messageJSONObject = eval('(' + messageJSONString + ')');
+    var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
+
+    // load recipient from temporary memory
+    var recipient = Comm.loadRecipient();
+
+    // execute round 3
+		var credential = recipient.round3(msgFromIssuer);
+		sessionStorage.setItem("endTime", new Date().getTime());
+		document.write("<p>Time to issue:" + ((sessionStorage.getItem("endTime") - sessionStorage.getItem("startTime")) / 1000) + "</p>");
+
+		// update progression
+		updateProgression(100);
+
+    // ask the user to save the issued credential
+    var successBox = document.getElementById("progression_container");
+    successBox.setAttribute("class", "alert alert-success");
+		successBox.setAttribute("style", "display:block;");
+		
+		var form = document.createElement("form");
+		form.setAttribute("class", "form-inline");
+		form.setAttribute("action", "javascript:Store.save(credential)");
+		
+		form.appendChild(document.createElement("br"));
+		
+		var textContainer = document.createElement("p");
+		var text = document.createTextNode("Congratulations, a new credential "
+      + "has been issued to you. If you want to save it, please enter a name in the box below.");
+		textContainer.appendChild(text);
+		form.appendChild(textContainer);
+		
+		var credName = document.createElement("input");
+		credName.setAttribute("type", "text");
+		credName.setAttribute("id", "cred_name");
+		form.appendChild(credName);
+		
+		form.appendChild(document.createElement("br"));
+		form.appendChild(document.createElement("br"));
+		
+		var button = document.createElement("input");
+		button.setAttribute("type", "submit");
+		button.setAttribute("value", "Submit");
+		form.appendChild(button);
+		
+    successBox.appendChild(form);
+}
+
+// Set gender information
+function setGenderInformation(gender) {
+	document.getElementById("gender").value = gender;
+}
+
+// Update progression
+function updateProgression(percentage) {
+	var progressBarContainer = document.getElementById("progression_container");
+	progressBarContainer.setAttribute("class", "progress");
+	progressBarContainer.setAttribute("style", "display:inline;");
+	
+	var msgContainer = document.getElementById("msg_container");
+	if(msgContainer == null) {
+		var msgContainer = document.createElement("p");
+		msgContainer.setAttribute("id", "msg_container");
+		var msg = document.createTextNode("Please wait while a new credential is being generated...");
+		msgContainer.appendChild(msg);
+		progressBarContainer.appendChild(msgContainer);
+	}
+	
+	if(percentage == 100) {
+		progressBarContainer.removeChild(msgContainer);
+	}
+	
+	var progressBar = document.getElementById("progress_bar");
+	if(progressBar == null) {
+		var progressBar = document.createElement("div");
+		progressBar.setAttribute("class", "bar");
+		progressBar.setAttribute("id", "progress_bar");
+		progressBarContainer.appendChild(progressBar);
+	}
+	progressBar.setAttribute("style", "width:" + percentage + "%;");
+}
+</script>

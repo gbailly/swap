@@ -1,10 +1,11 @@
 Locations = function() {
 };
 
-//Locations.BASE_DIR = "http://swap-crypto.herokuapp.com/resources/strong";
 Locations.BASE_DIR = "resources/strong";
 Locations.SYSTEM_PARAMETERS_LOCATION = "/public/SystemParameters.xml";
 Locations.GROUP_PARAMETERS_LOCATION = "/public/GroupParameters.xml";
+Locations.ISSUER_PUBLIC_KEY_LOCATION = "/public/IssuerPublicKey.xml";
+Locations.CREDENTIAL_STRUCTURE_LOCATION = "/public/CredStruct_UtopiaHiddenValues.xml";
 
 
 Locations.init = function(objectLocation) {
@@ -49,6 +50,42 @@ Locations.initSystem = function() {
   return Locations.init(groupParamsLocation);
 	
 }
+
+Locations.initIssuer = function(issuerPrivKeyLocation) {
+	// init system parameters and group parameters
+	Locations.initSystem();
+
+  // load issuer public key
+	var issuerPubKeyLocation = Locations.ISSUER_PUBLIC_KEY_LOCATION;
+  var issuerPubKey = Locations.init(issuerPubKeyLocation);
+
+  // load issuer private key
+  var issuerPrivKey = Locations.init(issuerPrivKeyLocation);
+  
+  // init credential structure
+	var credStructLocation = Locations.CREDENTIAL_STRUCTURE_LOCATION;
+  var credStruct = Locations.init(credStructLocation);
+
+  return [new IssuerKeyPair(issuerPrivKey),
+		new IssuanceSpec(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct)];
+};
+
+Locations.initRecipient = function() {
+	// init system parameters and group parameters
+	Locations.initSystem();
+  
+  // init issuer public key
+	var issuerPubKeyLocation = Locations.ISSUER_PUBLIC_KEY_LOCATION;
+  var issuerPubKey = Locations.init(issuerPubKeyLocation);
+  
+  // init credential structure
+	var credStructLocation = Locations.CREDENTIAL_STRUCTURE_LOCATION;
+  var credStruct = Locations.init(credStructLocation);
+  
+	// create the issuance specification
+	return new IssuanceSpec(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct);
+};
+
 
 if(exports != undefined)
   module.exports = Locations;

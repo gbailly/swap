@@ -27,3 +27,21 @@ Store.save = function(data) {
 		localStorage.setItem(keyType + dataName, escape(data.toJSONString()));
 	}
 };
+
+Store.loadMasterSecretMap = function() {
+	var masterSecretMap = new Object();
+	
+	if(localStorage) {
+		var masterSecretJSONObject = null;
+		for(var i=0; i<localStorage.length; i++) {
+			var key = localStorage.key(i);
+			if(Utils.stringStartsWith(key, Store.MASTER_SECRET_KEY_TYPE)) {
+				masterSecretJSONObject = eval('(' + unescape(localStorage.getItem(key)) + ')');
+				masterSecretMap[key.substr(Store.MASTER_SECRET_KEY_TYPE.length, key.length - 1)]
+					= MasterSecret.fromJSONObject(masterSecretJSONObject);
+			}
+		}
+	}
+	
+	return masterSecretMap;
+};

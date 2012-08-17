@@ -23,5 +23,6 @@ StructureStore.prototype.load = function(objectXMLDoc) {
 	return Parser.getInstance().parse(objectXMLDoc);
 };
 
+
 if(typeof exports != 'undefined')
 	module.exports = StructureStore;
