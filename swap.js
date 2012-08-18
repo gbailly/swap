@@ -16,6 +16,7 @@ var AttributeStructure  = require('./public/javascripts/swap/dm/structure/Attrib
 var Constants           = require('./public/javascripts/swap/utils/Constants.js');
 var Commitment          = require('./public/javascripts/swap/dm/Commitment.js');
 var CommitmentOpening   = require('./public/javascripts/swap/dm/CommitmentOpening.js');
+var CommitmentOpening   = require('./public/javascripts/swap/dm/Credential.js');
 var CredentialStructure = require('./public/javascripts/swap/dm/structure/CredentialStructure.js');
 var DomNym              = require('./public/javascripts/swap/DomNym.js');
 var Exponentiation      = require('./public/javascripts/swap/utils/perf/Exponentiation.js');
