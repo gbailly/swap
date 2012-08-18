@@ -13,6 +13,20 @@ Utils.computeRandomNumberFromBitLength = function(bitLength) {
 	return new BigInteger(bitLength, Utils.random);
 };
 
+Utils.computeRandomNumberSymmetric = function(bitLength) {
+	var temp;
+	do {
+		temp = new BigInteger(bitLength + 1, Utils.random);
+		// 0 <= temp <= 2^(bitLength+1) - 1
+		temp = temp.subtract(BigInteger.ONE.shiftLeft(bitLength)).add(
+				BigInteger.ONE); // temp = temp - 2^bitLength + 1
+		// -2^bitLength+1 <= temp <= 2^bitLength
+	} while (temp.bitLength() > bitLength);
+
+	// -2^bitLength+1 <= temp <= 2^bitLength-1
+	return temp;
+};
+
 Utils.expMul = function(product, base, exponent, modulus) {
 	var t; // t = base^exponent (mod modulus)
 
@@ -49,6 +63,34 @@ Utils.modPow = function(base, exponent, modulus) {
 	}
 };
 
+Utils.multiExpMul = function(expoList, modulus) {
+	var accu = BigInteger.ONE;
+	var res;
+	
+	for ( var i = 0; i < expoList.length; i++) {
+		var expo = expoList[i];
+		if(expo.getModulus() != null) {
+			// normal case
+			var base = expo.getBase();
+			var exponent = expo.getExponent();
+			if(exponent.compareTo(BigInteger.ZERO) < 0) {
+				base = base.modInverse(modulus);
+				exponent = exponent.abs();
+			}
+			res = base.modPow(exponent, modulus);
+		}
+		else {
+			// fixed base windowing case
+			var fixedBaseWindowing = expo.getFixedBaseWindowing();
+			var exponent = expo.getExponent();
+			res = fixedBaseWindowing.modPow(exponent);
+		}	
+		// multiply the result to the accumulator
+		accu = accu.multiply(res).mod(modulus);
+	}
+	return accu;
+};
+
 Utils.encodeDate = function(date) {
 	var referenceDate = new Date("1900/01/01");
 
@@ -68,6 +110,109 @@ Utils.encodeDate = function(date) {
 	var diffDays = diffMillis.divide(new BigInteger("86400000"));
 
 	return diffDays;
+};
+
+Utils.computeContext = function(issuerPubKey) {
+	var groupParams = issuerPubKey.getGroupParams();
+	var contextVector = new Array();
+	Utils.computeKeyContext(issuerPubKey, contextVector);
+	Utils.computeGroupParamsContext(groupParams, contextVector);
+
+	return Utils.hashOf1(groupParams.getSystemParams().getL_H(), contextVector);
+};
+
+Utils.computeKeyContext = function(issuerPubKey, contextVector) {
+	var capR = issuerPubKey.getCapR();
+
+	contextVector.push(issuerPubKey.getCapS());
+	contextVector.push(issuerPubKey.getCapZ());
+
+	for ( var i = 0; i < capR.length; i++)
+		contextVector.push(capR[i]);
+};
+
+Utils.computeGroupParamsContext = function(groupParams, contextVector) {
+	contextVector.push(groupParams.getG());
+	contextVector.push(groupParams.getH());
+	contextVector.push(groupParams.getRho());
+	contextVector.push(groupParams.getCapGamma());
+};
+
+Utils.computeFSChallenge = function(systemParams, context, capU, attrStructs,
+		values, nym, domNym, capUTilde, capCTilde, nymTilde, domNymTilde, n1) {
+	var nymError = (nym == null && nymTilde != null)
+			|| (nym != null && nymTilde == null);
+	var domNymError = (domNym == null && domNymTilde != null)
+			|| (domNym != null && domNymTilde == null);
+
+	if (nymError || domNymError) {
+		alert("Nym or domNym error");
+	}
+
+	// allocate the array of BigInteger
+	var array = new Array();
+
+	array.push(context);
+	array.push(capU);
+	for ( var i in attrStructs) {
+		var attrStruct = attrStructs[i];
+		// the committed value!
+		if (attrStruct.getIssuanceMode() == IssuanceMode.COMMITTED) {
+			var committedValue = values.get(attrStruct.getName()).getContent()
+					.getCommitment();
+			array.push(committedValue);
+		}
+	}
+
+	if (nym != null)
+		array.push(nym);
+	if (domNym != null)
+		array.push(domNym);
+
+	array.push(capUTilde);
+
+	for ( var i in attrStructs) {
+		var attrStruct = attrStructs[i];
+		// the committed value!
+		if (attrStruct.getIssuanceMode() == IssuanceMode.COMMITTED) {
+			var cTilde = capCTilde[attrStruct.getName()];
+			array.push(cTilde);
+		}
+	}
+
+	if (nym != null)
+		array.push(nymTilde);
+	if (domNym != null)
+		array.push(domNymTilde);
+
+	array.push(n1);
+
+	// hash the array of BigIntegers
+	return Utils.hashOf1(systemParams.getL_H(), array);
+};
+
+Utils.hashOf1 = function(l_H, array) {
+	var asn1representation = ASN1.encode(array);
+	var asn1Hex = Utils.byteArrayToHexString(asn1representation);
+	return new BigInteger(CryptoJS.SHA256(asn1Hex).toString(), 16);
+};
+
+Utils.byteArrayToHexString = function(array) {
+	var hexString = "";
+	for ( var i = 0; i < array.length; i++)
+		hexString += Utils.convertByteToHex(array[i]);
+	return hexString;
+};
+
+Utils.convertByteToHex = function(element) {
+	var hexNumber = (element & 0xFF).toString(16);
+	if (hexNumber.length == 1)
+		hexNumber = "0" + hexNumber;
+	return hexNumber;
+};
+
+Utils.computeResponse = function(vTilde, c, v) {
+	return vTilde.add(c.multiply(v));
 };
 
 

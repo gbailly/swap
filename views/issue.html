@@ -101,7 +101,7 @@
 		
 	if (step == "round1") {
 		// update progression
-		updateProgression(10);
+		Utils.updateProgression(10);
 		
     // recover message from JSON string
     var messageJSONString = document.getElementById("message").value;
@@ -109,8 +109,8 @@
     var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
 
     // load recipient from temporary memory
-    var recipient = Comm.loadRecipient();
-
+    var recipient = Store.loadRecipient();
+/*
 		// init precomputed bases if necessary
 		if(Constants.FAST_EXPO) {
 	    // load fixed base windowing map
@@ -124,21 +124,21 @@
 			recipient.setFixedBaseWindowingMap(fixedBaseWindowingMap);
 
 			// update progression
-			updateProgression(25);
-		}
+			Utils.updateProgression(25);
+		}*/
 		
     // execute round 1
     var msgToIssuer = recipient.round1(msgFromIssuer);
 
     // store recipient in temporary memory for later use
-    Comm.storeRecipient(recipient);
+   	Store.save(recipient);
 
 		// update progression
-		updateProgression(60);
+		Utils.updateProgression(60);
 		
     // send message to issuer
     var msgToIssuerJSONString = msgToIssuer.toJSONString();
-    Comm.postToURL('/issue', msgToIssuerJSONString, "round2");
+    Utils.postToURL('/issue', msgToIssuerJSONString, "round2");
 
   } else if (step == "round3") {
 		// update progression
@@ -196,34 +196,5 @@
 // Set gender information
 function setGenderInformation(gender) {
 	document.getElementById("gender").value = gender;
-}
-
-// Update progression
-function updateProgression(percentage) {
-	var progressBarContainer = document.getElementById("progression_container");
-	progressBarContainer.setAttribute("class", "progress");
-	progressBarContainer.setAttribute("style", "display:inline;");
-	
-	var msgContainer = document.getElementById("msg_container");
-	if(msgContainer == null) {
-		var msgContainer = document.createElement("p");
-		msgContainer.setAttribute("id", "msg_container");
-		var msg = document.createTextNode("Please wait while a new credential is being generated...");
-		msgContainer.appendChild(msg);
-		progressBarContainer.appendChild(msgContainer);
-	}
-	
-	if(percentage == 100) {
-		progressBarContainer.removeChild(msgContainer);
-	}
-	
-	var progressBar = document.getElementById("progress_bar");
-	if(progressBar == null) {
-		var progressBar = document.createElement("div");
-		progressBar.setAttribute("class", "bar");
-		progressBar.setAttribute("id", "progress_bar");
-		progressBarContainer.appendChild(progressBar);
-	}
-	progressBar.setAttribute("style", "width:" + percentage + "%;");
 }
 </script>

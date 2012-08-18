@@ -381,6 +381,49 @@ MasterSecret.fromJSONObject = function(masterSecretJSONObject) {
   return masterSecret;
 };
 
+Message.prototype.toJSONString = function() {
+  var ipvJSONString = '';
+  var proofJSONString = '';
+  var ulJSONString = '';
+	
+  if(this.issuanceProtocolValues != null) {
+    for(var key in this.issuanceProtocolValues) {
+      ipvJSONString += '"' + key + '":' + this.issuanceProtocolValues[key].toJSONString() + ',';
+		}
+    ipvJSONString = Utils.removeStringLastChar(ipvJSONString);
+  }
+	
+  if(this.proof != null) {
+    proofJSONString = ',"proof":' + this.proof.toJSONString();
+	}
+	
+  if(this.updateLocation != null) {
+    ulJSONString = ',"updateLocation":"' + this.updateLocation + '"';
+	}
+	
+  return '{"issuanceProtocolValues":{' + ipvJSONString + '}' + proofJSONString + ulJSONString + '}';
+};
+
+Message.fromJSONObject = function(messageJSONObject) {
+	var key;
+  var issuanceProtocolValues = null;
+  var proof = null;
+	var updateLocation = null;
+	
+  for(key in messageJSONObject) {
+    if(key == "issuanceProtocolValues") {
+      issuanceProtocolValues = new Object();
+      for(var ipvKey in messageJSONObject[key]) {
+        issuanceProtocolValues[ipvKey] = BigInteger.fromJSONObject(messageJSONObject[key][ipvKey]);
+			}
+    } else if(key == "proof") {
+      proof = Proof.fromJSONObject(messageJSONObject[key]);
+    }
+  }
+	
+  return new Message(issuanceProtocolValues, proof, updateLocation);
+};
+
 Nym.prototype.toJSONString = function() {
   var randomJSONString = '';
   if(this.random != null)
@@ -417,6 +460,55 @@ Nym.fromJSONObject = function(nymJSONObject) {
 	nym.setNym(nymNym);
 	
 	return nym;
+};
+
+Proof.prototype.toJSONString = function() {
+  var challengeJSONString = '';
+  if(this.challenge != null)
+    challengeJSONString = '"challenge":' + this.challenge.toJSONString() + ',';
+	
+  var sValueMapJSONString = '';
+  if (this.sValueMap != null) {
+    for (var key in this.sValueMap) {
+      sValueMapJSONString += '"' + key + '":' + this.sValueMap[key].toJSONString() + ',';
+		}
+    sValueMapJSONString = Utils.removeStringLastChar(sValueMapJSONString);
+  }
+	
+  var commonValueMapJSONString = '';
+  if (this.commonValueMap != null) {
+    for (key in this.commonValueMap)
+      commonValueMapJSONString += '"' + key + '":' + this.commonValueMap[key].toJSONString() + ',';
+    commonValueMapJSONString = Utils.removeStringLastChar(commonValueMapJSONString);
+  }
+	
+  return '{' + challengeJSONString + '"sValueMap":{' + sValueMapJSONString
+  	+ '},"commonValueMap":{' + commonValueMapJSONString + '}}';
+};
+
+Proof.fromJSONObject = function(proofJSONObject) {
+  var challenge = null;
+  var sValueMap = null;
+  var commonValueMap = null;
+	
+  for(var key in proofJSONObject) {
+    if(key == "challenge")
+      challenge = BigInteger.fromJSONObject(proofJSONObject[key]);
+    else if(key == "sValueMap") {
+      sValueMap = new Object();
+      var sValueMapJSONObject = proofJSONObject[key]; // cannot be null
+      for(var sValueKey in sValueMapJSONObject)
+        sValueMap[sValueKey] = SValue.fromJSONObject(sValueMapJSONObject[sValueKey]);
+    }
+    else if(key == "commonValueMap") {
+      commonValueMap = new Object();
+      var commonValueMapJSONObject = proofJSONObject[key]; // cannot be null
+      for(var commonValueKey in commonValueMapJSONObject)
+        commonValueMap[commonValueKey] = BigInteger.fromJSONObject(commonValueMapJSONObject[commonValueKey]);
+    }
+  }
+	
+  return new Proof(challenge, sValueMap, commonValueMap);
 };
 
 Recipient.prototype.toJSONString = function() {
@@ -515,6 +607,20 @@ Recipient.fromJSONObject = function(recipientJSONObject) {
 	}
 
   return recipient;
+};
+
+SValue.prototype.toJSONString = function() {
+  return this.value.toJSONString();
+};
+
+SValue.fromJSONObject = function(sValueJSONObject) {
+  var value;
+  if("string" == typeof sValueJSONObject) {
+    value = BigInteger.fromJSONObject(sValueJSONObject);
+  } else {
+    //value = SValuesProveCL.fromJSONObject(sValueJSONObject);
+  }
+	return new SValue(value);
 };
 
 SystemParameters.prototype.toJSONString = function() {

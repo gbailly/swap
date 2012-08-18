@@ -9,7 +9,6 @@ app.get('/issue', function(req, res) {
 
 // issue a credential
 app.post('/issue', function(req, res) {
-	console.log("success");/*
   var optionalValue = req.param('optional', null);
   if(optionalValue == "round0") {
     // recover values from JSON string
@@ -38,11 +37,8 @@ app.post('/issue', function(req, res) {
     // execute round 2
     var messageToRecipient = issuer.round2(msgFromRecipient);
     // redirect the user
-    res.render('issue', {
-      message: messageToRecipient.toJSONString(), 
-      step: "round3",
-      fixedBaseWindowingMap: '{}', 
-      layout: 'layout_protocols'
+    res.render('issue', { message: messageToRecipient.toJSONString(), step: "round3",
+      fixedBaseWindowingMap: '{}', layout: 'layout_protocols'
     });
-  }*/
+  }
 });
