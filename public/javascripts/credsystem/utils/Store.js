@@ -16,9 +16,9 @@ Store.save = function(data) {
 	if(data instanceof Recipient) {
 		sessionStorage.setItem(Store.RECIPIENT_KEY, escape(data.toJSONString()));
 		return;
-	} else if (data instanceof Prover) {
+	} /*else if (data instanceof Prover) {
 		
-	}
+	}*/
 	
 	if(data instanceof MasterSecret) {
 		keyType = Store.MASTER_SECRET_KEY_TYPE;

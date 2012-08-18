@@ -1,3 +1,41 @@
+Attribute.prototype.toJSONString = function() {
+	var valueType = null;
+	
+  if(this.value instanceof BigInteger) {
+  	valueType = ',"value":';
+	} else if(this.value instanceof CommitmentOpening) {
+		valueType = ',"commOpening":';
+	}
+	
+  if(this.primeFactors != null) {
+		
+  }
+
+  return '{"attrStruct":' + this.attrStruct.toJSONString() + valueType + this.value.toJSONString() + '}';
+};
+
+Attribute.fromJSONObject = function(attributeJSONObject) {
+	var attrStruct = null;
+	var value = null;
+	var primeFactors = null;
+	
+	for(var key in attributeJSONObject) {
+		if(key == "attrStruct") {
+			attrStruct = AttributeStructure.fromJSONObject(attributeJSONObject[key]);
+		}
+		else if(key == "value") {
+			value = BigInteger.fromJSONObject(attributeJSONObject[key]);
+		}
+		else if(key == "commOpening") {
+			value = CommitmentOpening.fromJSONObject(attributeJSONObject[key]);
+		}
+		else if(key == "primeFactors") {
+		}
+	}
+	
+  return new Attribute(attrStruct, value, primeFactors);
+};
+
 AttributeStructure.prototype.toJSONString = function() {
   var primeFactorsString = '';
   if(this.primeFactors != null) {
@@ -159,6 +197,58 @@ CommitmentOpening.fromJSONObject = function(commOpeningJSONObject) {
 	}
 	
   return new CommitmentOpening(null, null, capS, random, n, value, baseList, messageList);
+};
+
+Credential.prototype.toJSONString = function() {
+	var attributeJSONStringList = new Array();
+	for(var i=0; i<this.attributeList.length; i++) {
+		attributeJSONStringList[i] = this.attributeList[i].toJSONString();
+	}
+
+	return '{"issuerPubKeyLocation":"' + this.issuerPubKeyLocation+ '","credStructLocation":"' + this.credStructLocation
+		+ '","issuerPubKey":' + this.issuerPubKey.toJSONString() + ',"credStruct":' + this.credStruct.toJSONString()
+		+ ',"capA":' + this.capA.toJSONString() + ',"e":' + this.e.toJSONString() + ',"v":' + this.v.toJSONString()
+		+ ',"masterSecret":' + this.masterSecret.toJSONString() + ',"attributeList":[' + attributeJSONStringList + ']}';
+};
+
+Credential.fromJSONObject = function(credentialJSONObject) {
+	var issuerPubKeyLocation = null;
+	var credStructLocation = null;
+	var issuerPubKey = null;
+	var credStruct = null;
+	var capA = null;
+	var e = null;
+	var v = null;
+	var masterSecret = null;
+	var attributeList = null;
+	
+	for(var key in credentialJSONObject) {
+		if(key == "issuerPubKeyLocation") {
+			issuerPubKeyLocation = credentialJSONObject[key];
+		}	else if(key == "credStructLocation") {
+			credStructLocation = credentialJSONObject[key];
+		}	if(key == "issuerPubKey") {
+			issuerPubKey = IssuerPublicKey.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "credStruct") {
+			credStruct = CredentialStructure.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "capA") {
+			capA = BigInteger.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "e") {
+			e = BigInteger.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "v") {
+			v = BigInteger.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "masterSecret") {
+			masterSecret = MasterSecret.fromJSONObject(credentialJSONObject[key]);
+		}	else if(key == "attributeList") {
+			attributeList = new Array();
+			for(var i=0; i<credentialJSONObject[key].length; i++) {
+				attributeList[i] = Attribute.fromJSONObject(credentialJSONObject[key][i]);
+			}
+		}
+	}
+	
+  return new Credential(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct,
+		capA, e, v, null, masterSecret, attributeList);
 };
 
 CredentialStructure.prototype.toJSONString = function() {

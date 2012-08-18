@@ -1,7 +1,17 @@
 Utils = function() {
 }
 
+
 Utils.random = new SecureRandom();
+
+
+Utils.isInInterval = function(value, lowerBound, upperBound) {
+	return (lowerBound.compareTo(value) <= 0 && value.compareTo(upperBound) <= 0);
+};
+
+Utils.isInIntervalSymmetric = function(value, bitLength) {
+	return value.bitLength() <= bitLength;
+};
 
 Utils.computeRandomNumber = function(lower, upper, systemParams) {
 	var delta = upper.subtract(lower).add(BigInteger.ONE);
@@ -191,6 +201,20 @@ Utils.computeFSChallenge = function(systemParams, context, capU, attrStructs,
 	return Utils.hashOf1(systemParams.getL_H(), array);
 };
 
+Utils.computeFSChallenge2 = function(systemParams, context, capQ, capA, capATilde, n2) {
+	// allocate the array of BigInteger
+	var array = new Array();
+	
+	array.push(context);
+	array.push(capQ);
+	array.push(capA);
+	array.push(capATilde);
+	array.push(n2);
+
+	// hash the array of BigIntegers
+	return Utils.hashOf1(systemParams.getL_H(), array);
+};
+
 Utils.hashOf1 = function(l_H, array) {
 	var asn1representation = ASN1.encode(array);
 	var asn1Hex = Utils.byteArrayToHexString(asn1representation);
@@ -213,6 +237,19 @@ Utils.convertByteToHex = function(element) {
 
 Utils.computeResponse = function(vTilde, c, v) {
 	return vTilde.add(c.multiply(v));
+};
+
+Utils.stringEndsWith = function(string, suffix) {
+	return string.indexOf(suffix, string.length - suffix.length) != -1;
+};
+
+Utils.chooseE = function(systemParams) {
+	var offset = BigInteger.ONE.shiftLeft(systemParams.getL_e() - 1);
+	do {
+		var e = Utils.computeRandomNumberFromBitLength(systemParams.getL_ePrime() - 1);
+		e = e.add(offset);
+	} while (!e.isProbablePrime(systemParams.getL_pt()));
+	return e;
 };
 
 

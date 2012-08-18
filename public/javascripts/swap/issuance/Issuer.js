@@ -49,8 +49,8 @@ Issuer.prototype.round2 = function(message) {
 	
 	// 2.0.0.1
 	var nymHat = null;
-	if (this.nym != null) { // NOT TESTED!! // TODO fixed base windowing
-		nymHat = Utils.computeCommitment(this.groupParams, mHat_1, proof1
+	if (this.nym != null) { // TODO fixed base windowing
+		nymHat = Commitment.computeCommitment(this.groupParams, mHat_1, proof1
 				.getCommonValue(IssuanceSpec.rHat));
 		nymHat = Utils.expMul(nymHat, this.nym, negC, capGamma);
 	}
@@ -60,8 +60,7 @@ Issuer.prototype.round2 = function(message) {
 	var domNymHat = null;
 	if (this.domNym != null) { // NOT TESTED!! // TODO fixed base windowing
 		domNymHat = Utils.expMul(null, this.domNym.getNym(), negC, capGamma);
-		domNymHat = Utils.expMul(domNymHat, this.domnym.getG_dom(), mhat_1,
-				capGamma);
+		domNymHat = Utils.expMul(domNymHat, this.domNym.getG_dom(), mHat_1, capGamma);
 	}
 	// console.log(domNymHat);
 
@@ -84,11 +83,12 @@ Issuer.prototype.round2 = function(message) {
 	var capCHat = this.getCHat(negC, sValues);
 	// for (var i in capCHat)
 	// console.log('capCHat[' + i + ']:' + capCHat[i]);
-
+	
 	// 2.0.3 compute the Fiat-Shamir hash
 	var domNymNym = null;
-	if (this.domNym != null) // NOT TESTED!!
+	if (this.domNym != null) { // NOT TESTED!!
 		domNymNym = this.domNym.getNym();
+	}
 	var cHat = Utils.computeFSChallenge(this.systemParams, this.issuanceSpec
 			.getContext(), capU, attrStructs, this.values, this.nym, domNymNym,
 			capUHat, capCHat, nymHat, domNymHat, this.nonce1);
@@ -103,7 +103,7 @@ Issuer.prototype.round2 = function(message) {
 	// document.write("<p>vHatPrime:" + vHatPrime + "</p>");
 	var vHatPrimeBitLength = this.systemParams.getL_n() + 2
 			* this.systemParams.getL_Phi() + this.systemParams.getL_H() + 1;
-	if (!Utils.isInInterval1(vHatPrime, vHatPrimeBitLength))
+	if (!Utils.isInIntervalSymmetric(vHatPrime, vHatPrimeBitLength))
 		return null;
 	// check that mHat and rHat are in correct interval.
 	if(!this.checkInterval(sValues))
@@ -114,13 +114,12 @@ Issuer.prototype.round2 = function(message) {
 	// 2.1.1 choose e
 	var e = Utils.chooseE(this.systemParams);
 	// document.write("<p>e:" + e + "</p>");
-
+	
 	// 2.1.2
 	// choose vTilde
-	var vTilde = Utils.computeRandomNumber4(this.systemParams.getL_v() - 1);
+	var vTilde = Utils.computeRandomNumberFromBitLength(this.systemParams.getL_v() - 1);
 	// compute vPrimePrime
-	var vPrimePrime = vTilde.add(BigInteger.ONE.shiftLeft(this.systemParams
-			.getL_v() - 1));
+	var vPrimePrime = vTilde.add(BigInteger.ONE.shiftLeft(this.systemParams.getL_v() - 1));
 
 	// 2.1.3
 	// Q
@@ -135,24 +134,21 @@ Issuer.prototype.round2 = function(message) {
 	var pPrime_qPrime = privKey.computePPrimeQPrime(); // p' * q'
 	var eInverse = e.modInverse(pPrime_qPrime); // e^{-1} mod p'q'
 	var capA = capQ.modPow(eInverse, n);
-	// console.log('capA:' + capA);
 
 	// 2.2.1 compute capATilde
-	var r = Utils.computeRandomNumber2(pPrime_qPrime.subtract(BigInteger.ONE),
-			this.systemParams).add(BigInteger.ONE);
+	var pPrimeQPrimeMinus1 = pPrime_qPrime.subtract(BigInteger.ONE);
+	var r = Utils.computeRandomNumberFromBitLength(pPrimeQPrimeMinus1.bitLength()
+			+ this.systemParams.getL_Phi()).mod(pPrimeQPrimeMinus1).add(BigInteger.ONE);
 	var capATilde = capQ.modPow(r, n);
-	// document.write("<p>capATilde:" + capATilde + "</p>");
-
+	
 	// 2.2.2 compute challenge
 	var nonce2 = message.getIssuanceElement(IssuanceProtocolValues.nonce);
 	var cPrime = Utils.computeFSChallenge2(this.systemParams, this.issuanceSpec
 			.getContext(), capQ, capA, capATilde, nonce2);
-	// document.write("<p>cPrime:" + cPrime + "</p>");
-
+	
 	// 2.2.3
 	// compute s_e
 	var s_e = r.subtract(cPrime.multiply(eInverse)).mod(pPrime_qPrime);
-	// document.write("<p>s_e:" + s_e + "</p>");
 	// creating new s-value map
 	var sValues = new Object();
 	sValues[IssuanceSpec.s_e] = new SValue(s_e);
@@ -225,7 +221,7 @@ Issuer.prototype.checkInterval = function(values) {
 					+ this.systemParams.getL_Phi() + this.systemParams.getL_H() + 2;
 		}
 
-		if (!Utils.isInInterval1(values[name].getValue(), bitLength)) {
+		if (!Utils.isInIntervalSymmetric(values[name].getValue(), bitLength)) {
 			return false;
 		}
 	}
@@ -239,7 +235,8 @@ Issuer.prototype.computeQ = function(capS, capU, capZ, baseStruct, vPrimePrime, 
 	for ( var i in attrStructs) {
 		var attrStruct = attrStructs[i];
 		if(Constants.FAST_EXPO) {
-			expoList.push(new Exponentiation(baseStruct["R_" + attrStruct.getPubKeyIndex()], this.values.getValue(attrStruct), null));
+			expoList.push(new Exponentiation(baseStruct["R_" + attrStruct.getPubKeyIndex()],
+				this.values.getValue(attrStruct), null));
 			expoList.push(new Exponentiation(baseStruct["S"], vPrimePrime, null));
 		} else {
 			expoList.push(new Exponentiation(baseStruct[attrStruct.getPubKeyIndex()], this.values
@@ -249,7 +246,7 @@ Issuer.prototype.computeQ = function(capS, capU, capZ, baseStruct, vPrimePrime, 
 	}
 
 	var capQ = Utils.multiExpMul(expoList, n);
-	capQ = capQ.multiply(capU).remainder(n);
+	capQ = capQ.multiply(capU).mod(n);
 	capQ = capQ.modInverse(n);
 	capQ = capQ.multiply(capZ).mod(n);
 

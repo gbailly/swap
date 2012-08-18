@@ -23,11 +23,9 @@ IssuanceMode = {
 AttributeStructure = function(name, pubKeyIndex, issuanceMode, attributeType) {
 	/** Attribute's name. */
 	this.name = name;
-	/**
-	 * Position at which this attribute appears within the credential. This
-	 * corresponds to the indexes the attribute has with respect to the bases of
-	 * the issuer public key.
-	 */
+	// Position at which this attribute appears within the credential. This
+	// corresponds to the indexes the attribute has with respect to the bases of
+	// the issuer public key.
 	this.pubKeyIndex = pubKeyIndex;
 	/** The issuance mode of this attribute. */
 	this.issuanceMode = issuanceMode;

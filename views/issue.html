@@ -142,7 +142,7 @@
 
   } else if (step == "round3") {
 		// update progression
-		updateProgression(95);
+		Utils.updateProgression(95);
 		
     // recover message from JSON string
     var messageJSONString = document.getElementById("message").value;
@@ -150,15 +150,15 @@
     var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
 
     // load recipient from temporary memory
-    var recipient = Comm.loadRecipient();
+    var recipient = Store.loadRecipient();
 
     // execute round 3
 		var credential = recipient.round3(msgFromIssuer);
 		sessionStorage.setItem("endTime", new Date().getTime());
 		document.write("<p>Time to issue:" + ((sessionStorage.getItem("endTime") - sessionStorage.getItem("startTime")) / 1000) + "</p>");
-
+		
 		// update progression
-		updateProgression(100);
+		Utils.updateProgression(100);
 
     // ask the user to save the issued credential
     var successBox = document.getElementById("progression_container");
