@@ -1,6 +1,11 @@
 // issue a credential
 app.get('/issue', function(req, res) {
-  res.render('issue', { message: "", step: "choose", fixedBaseWindowingMap: '{}', layout: 'layout_protocols' });
+  res.render('issue', {
+		message: "",
+		step: "choose",
+		fixedBaseWindowingMap: '{}',
+		layout: 'layout'
+	});
   // init issuer key pair and issuance spec
 	var issuerData = Locations.initIssuer(issuerPrivKeyLocation);
   issuerKeyPair = issuerData[0];
@@ -24,8 +29,11 @@ app.post('/issue', function(req, res) {
     // execute round 0
     var messageToRecipient = issuer.round0();
     // redirect the user
-    res.render('issue', { message: messageToRecipient.toJSONString(), step: "round1",
-			fixedBaseWindowingMap: fixedBaseWindowingMapJSONString, layout: 'layout_protocols'
+    res.render('issue', {
+			message: messageToRecipient.toJSONString(),
+			step: "round1",
+			fixedBaseWindowingMap: fixedBaseWindowingMapJSONString,
+			layout: 'layout'
     });
   }
   else if(optionalValue == "round2") {
@@ -37,8 +45,11 @@ app.post('/issue', function(req, res) {
     // execute round 2
     var messageToRecipient = issuer.round2(msgFromRecipient);
     // redirect the user
-    res.render('issue', { message: messageToRecipient.toJSONString(), step: "round3",
-      fixedBaseWindowingMap: '{}', layout: 'layout_protocols'
+    res.render('issue', {
+			message: messageToRecipient.toJSONString(),
+			step: "round3",
+      fixedBaseWindowingMap: '{}',
+			layout: 'layout'
     });
   }
 });

@@ -7,8 +7,6 @@ CredSystem.generateMasterSecret = function() {
 };
 
 CredSystem.issueCredential = function() {
-	sessionStorage.setItem("startTime", new Date().getTime());
-	
 	// init the structures required for the issuance
 	// and create the issuance specification
 	var issuanceSpec = Locations.initRecipient();
@@ -71,4 +69,35 @@ CredSystem.issueCredential = function() {
 	
 	// run the issuance protocol
 	Utils.postToURL('/issue', valuesIssuer.toJSONString(), "round0");
+};
+
+CredSystem.prove = function() {
+	sessionStorage.setItem("startTime", new Date().getTime());
+	// init the structures required for the proof
+	// and create the proof specification
+	var proofSpec = Locations.initProver();
+	
+	// build the credential given the user's choice
+	var credentialSelectionList = document.getElementById("credential_selection_list");
+	var credentialJSONString = credentialSelectionList.options[credentialSelectionList.selectedIndex].value;
+	var credential = Credential.fromJSONObject(eval('(' + credentialJSONString + ')'));
+	
+	// get the master secret from the credential
+	var masterSecret = credential.getMasterSecret();
+	
+  // add the credential(s) to the currently used credentials
+  var credentialMap = new Object();
+  credentialMap[proofSpec.getCredTempNames()[0]] = credential;
+	
+	// init the prover
+	var prover = new Prover(masterSecret, credentialMap, proofSpec, null, null);
+	
+	// store the prover in temporary memory for later use
+	Store.save(prover);
+	
+	// update progression
+	Utils.updateProgression(5);
+
+  // run the prove protocol
+	Utils.postToURL('/prove', null, "proof");
 };

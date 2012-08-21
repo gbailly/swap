@@ -91,6 +91,45 @@ BigInteger.fromJSONObject = function(bigIntegerJSONObject) {
   return new BigInteger(bigIntegerJSONObject);
 };
 
+CLPredicate.prototype.toJSONString = function(identifierMap) {
+	var attrToIdNameMapJSONString = '';
+	for(var keyAttr in this.attrToIdsMap) {
+		for(var keyId in identifierMap) {
+			if(this.attrToIdsMap[keyAttr].getName() == identifierMap[keyId].getName()) {
+				attrToIdNameMapJSONString += '"' + keyAttr + '":"' + keyId + '",';
+			}
+		}
+	}
+	attrToIdNameMapJSONString = Utils.removeStringLastChar(attrToIdNameMapJSONString);
+	
+	return '{"predicateType":"' + this.predicateType + '","issuerPubKey":' + this.issuerPubKey.toJSONString()
+		+ ',"credStruct":' + this.credStruct.toJSONString() + ',"credName":"' + this.credName
+		+ '","attrToIdNameMap":{' + attrToIdNameMapJSONString + '}}';
+};
+
+CLPredicate.fromJSONObject = function(predicateJSONObject, identifierMap) {
+	var issuerPubKey = null;
+	var credStruct = null;
+	var credName = null;
+	var attrToIdsMap = null;
+	
+	for(var key in predicateJSONObject) {
+		if(key == "issuerPubKey") {
+			issuerPubKey = IssuerPublicKey.fromJSONObject(predicateJSONObject[key]);
+		}	else if(key == "credStruct") {
+			credStruct = CredentialStructure.fromJSONObject(predicateJSONObject[key]);
+		}	else if(key == "credName") {
+			credName = predicateJSONObject[key];
+		}	else if(key == "attrToIdNameMap") {
+			attrToIdsMap = new Object();
+			for(var attrKey in predicateJSONObject[key]) {
+				attrToIdsMap[attrKey] = identifierMap[predicateJSONObject[key][attrKey]];
+			}
+		}
+	}
+	return new CLPredicate(issuerPubKey, credStruct, credName, attrToIdsMap);
+};
+
 Commitment.prototype.toJSONString = function() {
 	var i;
 	var valueJSONString;
@@ -283,6 +322,28 @@ DomNym.fromJSONObject = function(domNymJSONObject) {
   return new DomNym(groupParamsLocation, domNymNym, g_dom);
 };
 
+FixedBaseWindowing.prototype.toJSONString = function() {
+  var groupElementsJSONString = '';
+  for(var i=0; i<this.groupElements.length; i++)
+    groupElementsJSONString += this.groupElements[i].toJSONString() + ',';
+  groupElementsJSONString = Utils.removeStringLastChar(groupElementsJSONString, 1);
+  return '{"base":' + this.base.toJSONString() + ',"exponentBitLength":"' + this.exponentBitLength
+  + '","modulus":' + this.modulus.toJSONString() + ',"groupElements":[' + groupElementsJSONString + ']}';
+};
+
+FixedBaseWindowing.fromJSONObject = function(fixedBaseWindowingJSONObject) {
+  var base = BigInteger.fromJSONObject(fixedBaseWindowingJSONObject["base"]);
+  var exponentBitLength = parseInt(fixedBaseWindowingJSONObject["exponentBitLength"]);
+  var modulus = BigInteger.fromJSONObject(fixedBaseWindowingJSONObject["modulus"]);
+	
+  var groupElements = new Array();
+  var groupElementsJSONObject = fixedBaseWindowingJSONObject["groupElements"];
+  for(var i=0; i<groupElementsJSONObject.length; i++)
+    groupElements[i] = BigInteger.fromJSONObject(groupElementsJSONObject[i]);
+	
+  return new FixedBaseWindowing(base, exponentBitLength, modulus, groupElements);
+};
+
 GroupParameters.prototype.toJSONString = function() {
   return '{"capGamma":' + this.capGamma.toJSONString() + ',"rho":' + this.rho.toJSONString() + ',"g":'
 		+ this.g.toJSONString() + ',"h":' + this.h.toJSONString() + ',"systemParams":' + this.systemParams.toJSONString() + '}';
@@ -316,6 +377,28 @@ GroupParameters.fromJSONObject = function(groupParamsJSONObject) {
 	return new GroupParameters(capGamma, rho, g, h, systemParams);
 };
 
+Identifier.prototype.toJSONString = function() {
+	return '{"name":"' + this.name + '","proofMode":"' + this.proofMode + '","dataType":"' + this.dataType + '"}'
+};
+
+Identifier.fromJSONObject = function(identifierJSONObject) {
+	var name = null;
+	var proofMode = null;
+	var dataType = null;
+	
+	for(var key in identifierJSONObject) {
+		if(key == "name") {
+			name = identifierJSONObject[key];
+		}	else if(key == "proofMode") {
+			proofMode = identifierJSONObject[key];
+		}	else if(key == "dataType") {
+			dataType = identifierJSONObject[key];
+		}
+	}
+	
+	return new Identifier(name, proofMode, dataType);
+};
+
 IssuanceSpec.prototype.toJSONString = function() {
 	var contextJSONString = '';
 	if(this.context != null) {
@@ -338,17 +421,13 @@ IssuanceSpec.fromJSONObject = function(issuanceSpecJSONObject) {
 	for(key in issuanceSpecJSONObject) {
 		if(key == "issuerPubKeyLocation") {
 			issuerPubKeyLocation = issuanceSpecJSONObject[key];
-		}
-		else if(key == "credStructLocation") {
+		}	else if(key == "credStructLocation") {
 			credStructLocation = issuanceSpecJSONObject[key];
-		}
-		else if(key == "issuerPubKey") {
+		}	else if(key == "issuerPubKey") {
 			issuerPubKey = IssuerPublicKey.fromJSONObject(issuanceSpecJSONObject[key]);
-		}
-		else if(key == "credStruct") {
+		}	else if(key == "credStruct") {
 			credStruct = CredentialStructure.fromJSONObject(issuanceSpecJSONObject[key]);
-		}
-		else if(key == "context") {
+		}	else if(key == "context") {
 			context = BigInteger.fromJSONObject(issuanceSpecJSONObject[key]);
 		}
 	}
@@ -376,20 +455,16 @@ IssuerPublicKey.fromJSONObject = function(issuerPubKeyJSONObject) {
 	for(var key in issuerPubKeyJSONObject) {
 		if(key == "groupParams") {
 			groupParams = GroupParameters.fromJSONObject(issuerPubKeyJSONObject[key]);
-		}
-		else if(key == "capS") {
+		}	else if(key == "capS") {
 			capS = BigInteger.fromJSONObject(issuerPubKeyJSONObject[key]);
-		}
-		else if(key == "capZ") {
+		}	else if(key == "capZ") {
 			capZ = BigInteger.fromJSONObject(issuerPubKeyJSONObject[key]);
-		}
-		else if(key == "capRList") {
+		}	else if(key == "capRList") {
 			capRList = new Array();
 			for(var i=0; i<issuerPubKeyJSONObject[key].length; i++) {
 				capRList[i] = BigInteger.fromJSONObject(issuerPubKeyJSONObject[key][i]);
 			}
-		}
-		else if(key == "n") {
+		}	else if(key == "n") {
 			n = BigInteger.fromJSONObject(issuerPubKeyJSONObject[key]);
 		}
 	}
@@ -554,8 +629,9 @@ Nym.fromJSONObject = function(nymJSONObject) {
 
 Proof.prototype.toJSONString = function() {
   var challengeJSONString = '';
-  if(this.challenge != null)
+  if(this.challenge != null) {
     challengeJSONString = '"challenge":' + this.challenge.toJSONString() + ',';
+	}
 	
   var sValueMapJSONString = '';
   if (this.sValueMap != null) {
@@ -582,23 +658,123 @@ Proof.fromJSONObject = function(proofJSONObject) {
   var commonValueMap = null;
 	
   for(var key in proofJSONObject) {
-    if(key == "challenge")
+    if(key == "challenge") {
       challenge = BigInteger.fromJSONObject(proofJSONObject[key]);
-    else if(key == "sValueMap") {
+		} else if(key == "sValueMap") {
       sValueMap = new Object();
       var sValueMapJSONObject = proofJSONObject[key]; // cannot be null
-      for(var sValueKey in sValueMapJSONObject)
+      for(var sValueKey in sValueMapJSONObject) {
         sValueMap[sValueKey] = SValue.fromJSONObject(sValueMapJSONObject[sValueKey]);
-    }
-    else if(key == "commonValueMap") {
+			}
+    } else if(key == "commonValueMap") {
       commonValueMap = new Object();
       var commonValueMapJSONObject = proofJSONObject[key]; // cannot be null
-      for(var commonValueKey in commonValueMapJSONObject)
+      for(var commonValueKey in commonValueMapJSONObject) {
         commonValueMap[commonValueKey] = BigInteger.fromJSONObject(commonValueMapJSONObject[commonValueKey]);
+			}
     }
   }
 	
   return new Proof(challenge, sValueMap, commonValueMap);
+};
+
+ProofSpec.prototype.toJSONString = function() {
+	var identifierMapJSONString = '';
+	for(var key in this.identifierMap) {
+		identifierMapJSONString += '"' + key + '":' + this.identifierMap[key].toJSONString() + ',';
+	}
+	identifierMapJSONString = Utils.removeStringLastChar(identifierMapJSONString);
+	
+	var predicateJSONStringList = new Array();
+	for(var i =0; i< this.predicateList.length; i++) {
+		predicateJSONStringList[i] = this.predicateList[i].toJSONString(this.identifierMap);
+	}
+	
+	return '{"identifierMap":{' + identifierMapJSONString + '},"predicateList":[' + predicateJSONStringList.toString() + ']}';
+};
+
+ProofSpec.fromJSONObject = function(proofSpecJSONObject) {
+	var identifierMap = null;
+	var predicateList = null;
+	
+	// We need the identifierMap first
+	for(var key in proofSpecJSONObject) {
+		if(key == "identifierMap") {
+			identifierMap = new Object();
+			for(var idKey in proofSpecJSONObject["identifierMap"]) {
+				identifierMap[idKey] = Identifier.fromJSONObject(proofSpecJSONObject[key][idKey]);
+			}
+		}
+	}
+	
+	for(var key in proofSpecJSONObject) {
+		if(key == "predicateList") {
+			predicateList = new Array();
+			for(var i=0; i<proofSpecJSONObject["predicateList"].length; i++) {
+				var predicateType = proofSpecJSONObject[key][i]["predicateType"];
+				switch(proofSpecJSONObject[key][i]["predicateType"]) {
+				case PredicateType.CL:
+					predicateList[i] = CLPredicate.fromJSONObject(proofSpecJSONObject[key][i], identifierMap);
+				}
+			}
+		}
+	}
+	
+	return new ProofSpec(identifierMap, predicateList);
+};
+
+Prover.prototype.toJSONString = function() {
+	var credentialMapJSONString = '';
+	for(var key in this.credentialMap) {
+		credentialMapJSONString += '"' + key + '":' + this.credentialMap[key].toJSONString() + ',';
+	}
+	credentialMapJSONString = Utils.removeStringLastChar(credentialMapJSONString);
+	
+	var nonce1JSONString = '';
+	if(this.nonce1 != null) {
+		nonce1JSONString = ',"nonce1":' + nonce1.toJSONString();
+	}
+	
+	var commOpeningMapJSONString = '';
+	if(this.commOpeningMap != null) {
+		for(var key in this.commOpeningMap) {
+			commOpeningMapJSONString += '"' + key + '":' + this.commOpeningMap[key].toJSONString() + ',';
+		}
+		commOpeningMapJSONString = ',"commOpeningMap":{' + Utils.removeStringLastChar(commOpeningMapJSONString) + '}';
+	}
+	
+	return '{"masterSecret":' + this.masterSecret.toJSONString() + ',"credentialMap":{' + credentialMapJSONString
+		+ '},"proofSpec":' + this.proofSpec.toJSONString() + nonce1JSONString + commOpeningMapJSONString + '}';
+};
+
+Prover.fromJSONObject = function(proverJSONObject) {
+	var masterSecret = null;
+	var credentialMap = null;
+	var proofSpec = null;
+	var nonce1 = null;
+	var commOpeningMap = null;
+	
+	for(var key in proverJSONObject) {
+		if(key == "masterSecret") {
+			masterSecret = MasterSecret.fromJSONObject(proverJSONObject[key]);
+		}	else if(key == "credentialMap") {
+			credentialMap = new Object();
+			for(var credKey in proverJSONObject[key]) {
+				credentialMap[credKey] = Credential.fromJSONObject(proverJSONObject[key][credKey]);
+			}
+		}	else if(key == "proofSpec") {
+			proofSpec = ProofSpec.fromJSONObject(proverJSONObject[key]);
+		}	else if(key == "nonce1") {
+			nonce1 = BigInteger.fromJSONObject(proverJSONObject[key]);
+		}	else if(key == "commOpeningMap") {
+			commOpeningMap = new Object();
+			for(var commOpeningKey in proverJSONObject[key]) {
+				commOpeningMap[commOpeningKey] = CommitmentOpening.fromJSONObject(proverJSONObject[key][commOpeningKey]);
+			}
+		}
+	}
+	
+	return new Prover(masterSecret, credentialMap, proofSpec, nonce1, commOpeningMap);
 };
 
 Recipient.prototype.toJSONString = function() {
@@ -708,9 +884,18 @@ SValue.fromJSONObject = function(sValueJSONObject) {
   if("string" == typeof sValueJSONObject) {
     value = BigInteger.fromJSONObject(sValueJSONObject);
   } else {
-    //value = SValuesProveCL.fromJSONObject(sValueJSONObject);
+    value = SValuesProveCL.fromJSONObject(sValueJSONObject);
   }
 	return new SValue(value);
+};
+
+SValuesProveCL.prototype.toJSONString = function() {
+  return '{"eHat":"' + this.eHat + '","vHatPrime":"' + this.vHatPrime + '"}';
+};
+
+SValuesProveCL.fromJSONObject = function(sValuesProveCLJSONObject) {
+  return new SValuesProveCL(BigInteger.fromJSONObject(sValuesProveCLJSONObject["eHat"]),
+    BigInteger.fromJSONObject(sValuesProveCLJSONObject["vHatPrime"]));
 };
 
 SystemParameters.prototype.toJSONString = function() {

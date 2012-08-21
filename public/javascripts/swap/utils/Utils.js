@@ -83,11 +83,7 @@ Utils.multiExpMul = function(expoList, modulus) {
 			// normal case
 			var base = expo.getBase();
 			var exponent = expo.getExponent();
-			if(exponent.compareTo(BigInteger.ZERO) < 0) {
-				base = base.modInverse(modulus);
-				exponent = exponent.abs();
-			}
-			res = base.modPow(exponent, modulus);
+			res = Utils.modPow(base, exponent, modulus);
 		}
 		else {
 			// fixed base windowing case
@@ -212,6 +208,27 @@ Utils.computeFSChallenge2 = function(systemParams, context, capQ, capA, capATild
 	array.push(n2);
 
 	// hash the array of BigIntegers
+	return Utils.hashOf1(systemParams.getL_H(), array);
+};
+
+Utils.computeChallenge = function(systemParams, context, commonValueList, n1) {
+	// TODO merge with the computeFSChallenge()
+
+	var array = new Array();
+
+	array.push(context);
+
+	for ( var i in commonValueList) {
+		array.push(commonValueList[i]);
+		/*if(typeof exports != 'undefined') {
+			console.log(commonValueList[i].toJSONString());
+		} else {
+			document.write("<p>"+commonValueList[i].toJSONString()+"</p>");
+		}*/
+	}
+	
+	array.push(n1);
+
 	return Utils.hashOf1(systemParams.getL_H(), array);
 };
 

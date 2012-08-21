@@ -83,4 +83,4 @@ Utils.updateProgression = function(percentage) {
 		progressBarContainer.appendChild(progressBar);
 	}
 	progressBar.setAttribute("style", "width:" + percentage + "%;");
-}
+};

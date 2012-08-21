@@ -4,7 +4,7 @@ app.get('/loadxmldoc/:directory/:subdirectory/:filename', function(req, res) {
 	
   try {
     var data = fs.readFileSync(fn, 'utf8');
-    console.info('reading ' + fn);
+    console.info('Reading ' + fn);
   }
   catch (err) {
     console.error("There was an error opening the file " + fn);

@@ -41,6 +41,10 @@ Recipient.prototype.setNonce2 = function(n2) {
 	this.n2 = n2;
 };
 
+Recipient.prototype.setFixedBaseWindowingMap = function(fixedBaseWindowingMap) {
+	this.fixedBaseWindowingMap = fixedBaseWindowingMap;
+};
+
 Recipient.prototype.round1 = function(message) {
 	var nonce1 = message.getIssuanceElement(IssuanceProtocolValues.nonce);
 	var attrStructs = this.credStruct.getAttributeStructures();
@@ -62,12 +66,14 @@ Recipient.prototype.round1 = function(message) {
 	if(Constants.FAST_EXPO) {
 		expoList.push(new Exponentiation(this.fixedBaseWindowingMap["S"], this.vPrime, null));
 		this.addAttrExpos(attrStructs, this.fixedBaseWindowingMap, n, expoList);
-		expoList.push(new Exponentiation(this.fixedBaseWindowingMap["R_" + IssuanceSpec.MASTER_SECRET_INDEX], this.masterSecret.getValue(), null));
+		expoList.push(new Exponentiation(this.fixedBaseWindowingMap["R_"+IssuanceSpec.MASTER_SECRET_INDEX],
+			this.masterSecret.getValue(), null));
 	} else {
 		expoList.push(new Exponentiation(capS, this.vPrime, n));
 		this.addAttrExpos(attrStructs, capR, n, expoList);
-		expoList.push(new Exponentiation(capR[IssuanceSpec.MASTER_SECRET_INDEX], this.masterSecret.getValue(), n));
-	}	
+		expoList.push(new Exponentiation(capR[IssuanceSpec.MASTER_SECRET_INDEX],
+			this.masterSecret.getValue(), n));
+	}
 	this.capU = Utils.multiExpMul(expoList, n);
 	
 	// 1.3.0.0
@@ -83,14 +89,12 @@ Recipient.prototype.round1 = function(message) {
 	if(this.nym != null) {
 		nymTilde = this.masterSecret.getNymTilde(this.nymName);
 	}
-	//document.write("<p>nymTilde:" + nymTilde + "</p>");
 
 	// 1.3.0.2 TODO
 	var domNymTilde = null;
 	if(this.domNym != null) {
 		domNymTilde = this.masterSecret.getDomNymTilde(this.domNymName).getNym();
 	}
-	// document.write("<p>" + domNymTilde + "</p>");
 
 	// 1.3.1 compute capUTilde
 	bitLength = this.systemParams.getL_n() + 2 * this.systemParams.getL_Phi() + this.systemParams.getL_H();
@@ -132,7 +136,7 @@ Recipient.prototype.round1 = function(message) {
 		var rHat_nym = this.masterSecret.getRHat(this.nymName);
 		additionalValues[IssuanceSpec.rHat] = rHat_nym;
 	}
-
+	
 	// 1.3.5
 	var proof1 = new Proof(c, sValues, additionalValues, null);
 

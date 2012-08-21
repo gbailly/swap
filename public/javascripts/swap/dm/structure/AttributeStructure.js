@@ -4,8 +4,6 @@ DataType = {
 	INT : "INT",
 	/** String attributes. */
 	STRING : "STRING",
-	/** Attributes used to limit credential lifetime. */
-	EPOCH : "EPOCH",
 	/** Enumerated attributes. */
 	ENUM : "ENUM"
 };
@@ -57,24 +55,13 @@ AttributeStructure.prototype.createAttribute = function(value) {
 
 AttributeStructure.prototype.setPrimeEncodedFactors = function(
 		primeEncodedFactors, numValues) {
-	if (this.primeFactors != null)
-		;// EXCEPTION
+	if (this.primeFactors != null) {
+		alert("Prime encoding is already instantiated.");
+	}
 	// Object containing all possible attributes and their corresponding prime values.
 	this.primeFactors = primeEncodedFactors;
 	/** Number of primes encoded into one attribute. */
 	this.t = numValues;
-};
-
-AttributeStructure.prototype.getPrimeFactor = function(key) {
-	return this.primeFactors[key].getPrimeFactor();
-};
-
-AttributeStructure.prototype.getT = function() {
-	return this.t;
-};
-
-AttributeStructure.prototype.getL_t = function(systemParams) {
-	return Math.floor(systemParams.getL_m / this.t);
 };
 
 

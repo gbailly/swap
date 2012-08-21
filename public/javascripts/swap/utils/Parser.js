@@ -25,8 +25,6 @@ Parser.prototype.parse = function(xmlDoc) {
     return this.parseIssuerPrivateKey(xmlDoc);
   if (xmlDoc.documentElement.nodeName == "IssuerPublicKey")
     return this.parseIssuerPublicKey(xmlDoc);
-  if (xmlDoc.documentElement.nodeName == "MasterSecret")
-    return this.parseMasterSecret(xmlDoc);
   if (xmlDoc.documentElement.nodeName == "ProofSpecification")
     return this.parseProofSpec(xmlDoc);
   if (xmlDoc.documentElement.nodeName == "SystemParameters")
@@ -172,6 +170,39 @@ Parser.prototype.parseAttributes = function(attributes, implementation) {
   return attributeStructures;
 };
 
+Parser.prototype.parseFixedBaseWindowings = function(xmlDoc) {
+  var fixedBaseWindowingElementList = xmlDoc.getElementsByTagName("FixedBaseWindowing");
+  var fixedBaseWindowingMap = new Object();
+  for(var i =0; i< fixedBaseWindowingElementList.length; i++) {
+    var fixedBaseWindowingElement = fixedBaseWindowingElementList[i];
+    var name = fixedBaseWindowingElement.getAttribute("name");
+    var fixedBaseWindowing= this.parseFixedBaseWindowing(fixedBaseWindowingElement);
+    fixedBaseWindowingMap[name] = fixedBaseWindowing;
+  }
+	
+  return fixedBaseWindowingMap;
+};
+
+Parser.prototype.parseFixedBaseWindowing = function(fixedBaseWindowingElement) {
+  var base = new BigInteger(this.getValue(fixedBaseWindowingElement, "Base", null));
+  var exponentBitLength = parseInt(this.getValue(fixedBaseWindowingElement, "ExponentBitLength", null));
+  var modulus = new BigInteger(this.getValue(fixedBaseWindowingElement, "Modulus", null));
+  var groupElementsElement = fixedBaseWindowingElement.getElementsByTagName("GroupElements").item(0);
+  var groupElements = this.parseGroupElements(groupElementsElement);
+	
+  return new FixedBaseWindowing(base, exponentBitLength, modulus, groupElements);
+};
+
+Parser.prototype.parseGroupElements = function(groupElementsElement) {
+  var numElements = groupElementsElement.getAttribute("num");
+  var groupElementList = new Array();
+  for(var i=0; i<numElements; i++) {
+    groupElementList[i] = new BigInteger(this.getValue(groupElementsElement, "GroupElement_"+i, null));
+	}
+	
+  return groupElementList;
+};
+
 Parser.prototype.parseGroupParams = function(xmlDoc) {
 	// references
   var references = xmlDoc.getElementsByTagName("References").item(0);
@@ -229,6 +260,75 @@ Parser.prototype.parseBases = function(elements) {
     capR[i] = new BigInteger(this.getValue(bases, "R_" + i, null));
 
   return capR;
+};
+
+Parser.prototype.parseProofSpec = function(xmlDoc) {
+  // Parse attribute ids
+  var declarations = xmlDoc.getElementsByTagName("Declaration").item(0);
+  var identifierMap = this.parseAttributeIdentifiers(declarations);
+
+  var specifications = xmlDoc.getElementsByTagName("Specification").item(0);
+  var predicates = new Array();
+	
+  // Parse credentials
+  var credentials = specifications.getElementsByTagName("Credentials")
+  	.item(0).getElementsByTagName("Credential");
+  this.parseCredentials(credentials, identifierMap, predicates);
+
+  // Create new proof specification
+  return new ProofSpec(identifierMap, predicates);
+};
+
+Parser.prototype.parseAttributeIdentifiers = function(declarations) {
+  var identifierMap = new Object();
+  var attributeIds = declarations.getElementsByTagName("AttributeId");
+  for ( var i = 0; i < attributeIds.length; i++) {
+    var identifier = attributeIds.item(i);
+    var identifierName = identifier.getAttribute("name");
+    var identifierProofMode = identifier.getAttribute("proofMode").toUpperCase();
+    var identifierType = identifier.getAttribute("type").toUpperCase();
+    var id = new Identifier(identifierName, identifierProofMode, identifierType);
+
+    // verify that attribute identifiers have unique names
+    if (identifierMap[identifierName] != null) {
+      alert("[Parser:parseAttributeIdentifiers()] Identifiers must have unique names.");
+		}
+    identifierMap[identifierName] = id;
+  }
+  return identifierMap;
+};
+
+Parser.prototype.parseCredentials = function(credentials, identifierMap, predicates) {
+  for ( var i = 0; i < credentials.length; i++) {
+    var credential = credentials.item(i);
+    var credName = credential.getAttribute("name");
+    var issuerPubKeyLocation = credential.getAttribute("issuerPublicKey");
+    var credStructLocation = credential.getAttribute("credStruct");
+		var issuerPubKey = StructureStore.getInstance().get(issuerPubKeyLocation);
+		var credStruct = StructureStore.getInstance().get(credStructLocation);
+
+    var attrToIdentifierMap = new Object();
+    var attributes = credential.getElementsByTagName("Attribute");
+    for ( var k = 0; k < attributes.length; k++) {
+      var attr = attributes.item(k);
+      var attrName = attr.getAttribute("name");
+      var attrValue = this.getValue(null, attr, null);
+      var attrId = identifierMap[attrValue];
+      if (attrId == null) {
+        alert("Identifier " + attrValue + " not found.");
+			}
+      attrToIdentifierMap[attrName] = attrId;
+      // this is required for the Prime Encoded Values
+      var attributeIdentifier = new Array();
+      attributeIdentifier.push(issuerPubKey);
+      attributeIdentifier.push(credStruct);
+      attributeIdentifier.push(attrName);
+      this.identifierToAttributeMap[attrId] = attributeIdentifier;
+    }
+    var pred = new CLPredicate(issuerPubKey, credStruct,
+      credName, attrToIdentifierMap);
+    predicates.push(pred);
+  }
 };
 
 Parser.prototype.parseSystemParams = function(xmlDoc) {

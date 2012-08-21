@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+	
+    <div class="span8">
+      <div class="hero-unit">
+				<h1>Functionalities</h1>
+				<br />
+				<p>The privacy offered by SW@P can be obtained by executing the three steps that are described below.</p>
+			</div>
+			
+			<div class="page-header">
+				<h1>1. Setting up the environment</h1>
+			</div>
+			<p>To participate in the system, you first need to generate a new secret key denoted as the master secret. This operation only needs to be done once, and if you already did it, you can consider going directly to step 2. This master secret allows you to derive a pseudonym, which can be considered as a sort of session identifier.</p>
+			</p>The privacy of the system relies on the secrecy of this master. For this reason, you should remember at all time that this master secret must remain secret. It will therefore never be disclosed in any of the subsequent operations.</p>
+			
+			<div class="page-header">
+				<h1>2. Issuing a new credential</h1>
+			</div>
+			<p>Now that you have a master secret, you can start interacting with the server to receive a new credential. This credential will certify some of your personal information that you will be required to provide. This information will only be used on your computer, and nothing will be sent to the server.</p>
+			<p>After this step, it is important you keep the credential received secret, as the system also puts the value of your master into the credential. This should discourage you to share your credentials with others, as your master secret would then be exposed.</p>
+			
+			<div class="page-header">
+				<h1>3. Proving possession of a credential</h1>
+			</div>
+			<p>The credential you received in the previous step can now be verified. The system will check that the credential you provide has indeed been issued by this server and that it has not been falsified.</p>
+			<p>In this phase, the credential you enter will not be revealed to the server, but will only be used client-side.</p>
+    </div><!--/span-->
+
+		<div class="span4">
+			<form class="well form-horizontal">
+				<legend>How does it work?</legend>
+				<p>The right part of the page will be used in each of the three steps to require your intervention for inputs you need to provide to the system or for recording the outputs you obtained.</p>
+				<p>The operations might take some time to be executed, but you will be notified when the operation succeeds or not.</p>
+				<br />
+				<p><a class="btn" href="/setup">Start now &raquo;</a></p>
+			</form>
+	 	</div><!--/span-->
+	</div><!--/row-->
+</div><!--/.fluid-container-->

@@ -7,6 +7,7 @@ Locations.SYSTEM_PARAMETERS_LOCATION = "/public/SystemParameters.xml";
 Locations.GROUP_PARAMETERS_LOCATION = "/public/GroupParameters.xml";
 Locations.ISSUER_PUBLIC_KEY_LOCATION = "/public/IssuerPublicKey.xml";
 Locations.CREDENTIAL_STRUCTURE_LOCATION = "specification/CredStruct.xml";
+Locations.PROOF_SPECIFICATION_LOCATION = "specification/ProofSpec.xml";
 
 
 Locations.init = function(objectLocation) {
@@ -60,6 +61,22 @@ Locations.initSystem = function() {
 	
 }
 
+Locations.initRecipient = function() {
+	// init system parameters and group parameters
+	Locations.initSystem();
+  
+  // init issuer public key
+	var issuerPubKeyLocation = Locations.ISSUER_PUBLIC_KEY_LOCATION;
+  var issuerPubKey = Locations.init(issuerPubKeyLocation);
+  
+  // init credential structure
+	var credStructLocation = Locations.CREDENTIAL_STRUCTURE_LOCATION;
+  var credStruct = Locations.init(credStructLocation);
+  
+	// create the issuance specification
+	return new IssuanceSpec(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct);
+};
+
 Locations.initIssuer = function(issuerPrivKeyLocation) {
 	// init system parameters and group parameters
 	Locations.initSystem();
@@ -79,20 +96,38 @@ Locations.initIssuer = function(issuerPrivKeyLocation) {
 		new IssuanceSpec(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct)];
 };
 
-Locations.initRecipient = function() {
+Locations.initProver = function() {
 	// init system parameters and group parameters
 	Locations.initSystem();
   
   // init issuer public key
 	var issuerPubKeyLocation = Locations.ISSUER_PUBLIC_KEY_LOCATION;
-  var issuerPubKey = Locations.init(issuerPubKeyLocation);
+  Locations.init(issuerPubKeyLocation);
   
   // init credential structure
 	var credStructLocation = Locations.CREDENTIAL_STRUCTURE_LOCATION;
-  var credStruct = Locations.init(credStructLocation);
-  
-	// create the issuance specification
-	return new IssuanceSpec(issuerPubKeyLocation, credStructLocation, issuerPubKey, credStruct);
+  Locations.init(credStructLocation);
+	
+	// create the proof specification
+	var proofSpecLocation = Locations.PROOF_SPECIFICATION_LOCATION;
+	return Locations.init(proofSpecLocation);
+};
+
+Locations.initVerifier = function() {
+	// init system parameters and group parameters
+	Locations.initSystem();
+	
+	// init issuer public key
+	var issuerPubKeyLocation = Locations.ISSUER_PUBLIC_KEY_LOCATION;
+  Locations.init(issuerPubKeyLocation);
+
+  // init credential structure
+	var credStructLocation = Locations.CREDENTIAL_STRUCTURE_LOCATION;
+  Locations.init(credStructLocation);
+
+	// create the proof specification
+	var proofSpecLocation = Locations.PROOF_SPECIFICATION_LOCATION;
+	return Locations.init(proofSpecLocation);
 };
 
 

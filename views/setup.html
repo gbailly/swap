@@ -3,8 +3,9 @@
 	
     <div class="span8">
       <div class="hero-unit">
-				<h1>Setup the environment</h1>
-				<p>Here you can obtain a new master secret required to prove your identity later</p>
+				<h1>Set up the environment</h1>
+				<br />
+				<p style="text-align: justify;">In this first step, you will generate a new secret key necessary that will ensure the security of further operations. Optionally, you will have the opportunity to generate a pseudonym linked to this secret key.</p>
 			</div>
     </div><!--/span-->
 
@@ -12,7 +13,7 @@
 			<form class="well form-horizontal" action="javascript:CredSystem.generateMasterSecret()">
 				<legend>Please fill in...</legend>
 				
-				<p>Here you can generate a new master secret. Optionally, you can also ask to receive a new pseudonym linked to this master secret. For this you need to enter a name for the pseudonym in the box below.</p>
+				<p style="text-align: justify;">This tab will allow you to generate a new master secret. If you want a pseudonym linked to this key, please enter a name for it in the box below.</p>
 				
 				<br />
 				
@@ -27,7 +28,7 @@
 				
 				<br />
 				
-				<input type="submit" value="Generate now">
+				<input type="submit" value="Generate now" class="btn">
 			</form>
 			
 			<!-- display the progression -->
@@ -36,6 +37,54 @@
 	 	</div><!--/span-->
 	</div><!--/row-->
 </div><!--/.fluid-container-->
+
+
+<!-- dependencies -->
+<script type="text/javascript" src="/javascripts/libraries/jsbn/jsbn.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/prng4.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/rng.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/crypto-js/sha256.js"></script>
+
+<!-- library -->
+<script type="text/javascript" src="/javascripts/swap/dm/Attribute.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Credential.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Commitment.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/CommitmentOpening.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/DomNym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/MasterSecret.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Nym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Value.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Values.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/structure/AttributeStructure.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/structure/CredentialStructure.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/IssuanceSpec.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/Message.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/Recipient.js"></script>
+<script type="text/javascript" src="/javascripts/swap/key/IssuerPublicKey.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Identifier.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Proof.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/ProofSpec.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Prover.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/predicates/Predicate.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/predicates/CLPredicate.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValue.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValuesProveCL.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/ASN1.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Constants.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/GroupParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Parser.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/StructureStore.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/SystemParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Utils.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/perf/Exponentiation.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/perf/FixedBaseWindowing.js"></script>
+
+<!-- credential system -->
+<script type="text/javascript" src="/javascripts/credsystem/CredSystem.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/JSONConverter.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Locations.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Store.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Utils.js"></script>
 
 
 <!-- Generation protocol -->
@@ -61,35 +110,68 @@
 		masterSecret.setNymMap(nymMap);
 
 		// ask the user to save the generated master secret
+		var text = "Congratulations, you have generated a new master secret."
+			+ " If you want to save it, please enter a name in the box below and click the button.";
+		var data = masterSecret;
+		var nextStep = "/issue";
+		var nextStepText = "Get a credential now";
 	  var successBox = document.getElementById("progression_container");
 	  successBox.setAttribute("class", "alert alert-success");
 		successBox.setAttribute("style", "display:block;");
 
 		var form = document.createElement("form");
 		form.setAttribute("class", "form-inline");
-		form.setAttribute("action", "javascript:Store.save(masterSecret)");
 
 		form.appendChild(document.createElement("br"));
 
 		var textContainer = document.createElement("p");
-		var text = document.createTextNode("Congratulations, you have generated a new master secret."
-			+ " If you want to save it, please enter a name in the box below and click the button.");
-		textContainer.appendChild(text);
+		var textElement = document.createTextNode(text);
+		textContainer.appendChild(textElement);
 		form.appendChild(textContainer);
 
 		var masterSecretName = document.createElement("input");
 		masterSecretName.setAttribute("type", "text");
-		masterSecretName.setAttribute("id", "master_secret_name");
+		masterSecretName.setAttribute("id", "name");
 		form.appendChild(masterSecretName);
 
 		form.appendChild(document.createElement("br"));
 		form.appendChild(document.createElement("br"));
 
-		var button = document.createElement("input");
-		button.setAttribute("type", "submit");
-		button.setAttribute("value", "Submit");
-		form.appendChild(button);
+		// submit button
+		var submitButton = document.createElement("input");
+		submitButton.setAttribute("type", "button");
+		submitButton.setAttribute("value", "Submit");
+		submitButton.setAttribute("class", "btn");
+		submitButton.setAttribute("onclick", "javascript:Store.save(data)");
+		var submitButtonContainer = document.createElement("td");
+		submitButtonContainer.appendChild(submitButton);
 
+		// button-link to next step
+		var nextButton = document.createElement("a");
+		nextButton.setAttribute("class", "btn");
+		nextButton.setAttribute("href", nextStep);
+		text = document.createTextNode(nextStepText);
+		nextButton.appendChild(text);
+		var nextButtonContainer = document.createElement("td");
+		nextButtonContainer.appendChild(nextButton);
+
+		// add cells to row
+		var buttonToolbarRow = document.createElement("tr");
+		buttonToolbarRow.appendChild(submitButtonContainer);
+		buttonToolbarRow.appendChild(nextButtonContainer);
+
+		// add row to table body
+		var buttonToolbarBody = document.createElement("tbody");
+		buttonToolbarBody.appendChild(buttonToolbarRow);
+
+		// add table body to table
+		var buttonToolbar = document.createElement("table");
+		buttonToolbar.appendChild(buttonToolbarBody);
+
+		// add table to form
+		form.appendChild(buttonToolbar);
+
+		// add form to box
 	  successBox.appendChild(form);
 	}
 </script>
