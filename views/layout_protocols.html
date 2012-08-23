@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SWAP</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap-responsive.css" />
+	<style type="text/css">
+		body {
+			padding-top: 60px;
+			padding-bottom: 40px;
+		}
+	</style>
+
+	<!-- dependencies -->
+	<script type="text/javascript" src="/javascripts/libraries/jsbn/jsbn.js"></script>
+	<script type="text/javascript" src="/javascripts/libraries/jsbn/prng4.js"></script>
+	<script type="text/javascript" src="/javascripts/libraries/jsbn/rng.js"></script>
+	<script type="text/javascript" src="/javascripts/libraries/crypto-js/sha256.js"></script>
+
+	<!-- library -->
+	<script type="text/javascript" src="/javascripts/swap/MasterSecret.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/Nym.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/DomNym.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/Attribute.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/Credential.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/Commitment.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/CommitmentOpening.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/Value.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/Values.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/structure/AttributeStructure.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/dm/structure/CredentialStructure.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/issuance/IssuanceSpec.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/issuance/Message.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/issuance/Recipient.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/key/IssuerPublicKey.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/proof/sval/SValue.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/proof/Proof.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/ASN1.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/Constants.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/GroupParameters.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/Parser.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/StructureStore.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/SystemParameters.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/Utils.js"></script>
+	<script type="text/javascript" src="/javascripts/swap/utils/perf/Exponentiation.js"></script>
+	
+	<!-- credential system -->
+	<script type="text/javascript" src="/javascripts/credsystem/CredSystem.js"></script>
+	<script type="text/javascript" src="/javascripts/credsystem/utils/JSONConverter.js"></script>
+	<script type="text/javascript" src="/javascripts/credsystem/utils/Locations.js"></script>
+	<script type="text/javascript" src="/javascripts/credsystem/utils/Store.js"></script>
+	<script type="text/javascript" src="/javascripts/credsystem/utils/Utils.js"></script>
+</head>
+<body>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand">SWAP</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active"><a href="/">Home</a></li>
+						<li><a href="/download">Download</a></li>
+						<li><a href="/about">About</a></li>
+						<li><a href="/contact">Contact</a></li>
+						<li><a href="/help">Help</a></li>
+					</ul>
+				</div><!-- /.nav-collapse -->
+			</div><!-- /container -->
+		</div><!-- /.navbar-inner -->
+	</div><!-- /.navbar -->
+
+	<div class="container">
+		<%- body %>
+	</div> <!-- /container -->
+</body>
+</html>

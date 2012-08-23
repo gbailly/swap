@@ -1,0 +1,287 @@
+<div class="container">
+  <div class="row">
+	
+    <div class="span8">
+      <div class="hero-unit">
+				<h1>Issuing a Credential</h1>
+				<br />
+				<p style="text-align: justify;">In this second step, you will interact with the server to obtain a new credential. This step requires you choose a master secret that will be linked to the credential you will obtain. But the value of the master secret will never be communicated to the server.</p>
+			</div>
+    </div><!--/span-->
+
+		<div class="span4">
+			<form class="well form-inline" id="personal_data" action="javascript:CredSystem.issueCredential()">
+				<legend>Please fill in...</legend>
+				
+				<p style="text-align: justify;">This tab will allow you to receive a new credential. The information you enter here will be certified by the server but will never be visible tot he server as such.</p>
+				
+				<br />
+				
+				<table>
+				  <tbody>
+				    <tr>
+				      <td class="span8">First name</td>
+				      <td class="span4"><input type="text"id="firstName"></td>
+				    </tr>
+					  <tr>
+					    <td class="span8">Last name</td>
+					    <td class="span4"><input type="text" id="lastName"></td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Gender</td>
+					    <td class="span4">
+								<input type="radio" name="gender" value="male" onclick="setGenderInformation(this.value)" class="radio">
+								<label for="male" class="label_radio">M</label>
+								<input type="radio" name="gender" value="female" onclick="setGenderInformation(this.value)" class="radio">
+								<label for="female" class="label_radio">F</label>
+								<input type="hidden" id="gender">
+							</td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Date of birth</td>
+					    <td class="span4"><input type="text" placeholder="YYYY/MM/DD" id="dob"></td>
+					  </tr>
+					  <tr>
+					    <td class="span8">Nationality</td>
+					    <td class="span4"><input type="text" id="nationality"></td>
+					  </tr>
+				  </tbody>
+				</table>
+				
+				<br />
+				
+				<div id="private_data_choice">
+					<legend>Please choose...</legend>
+					<p style="text-align: justify;">To obtain a credential, you also need to specify which master secret should be linked to it. Again, your master secret will never be sent to the server.</p>
+					<br>
+				</div>
+				
+				<br />
+				
+				<input type="submit" value="Submit" class="btn">
+			</form>
+			<!-- display the progression -->
+			<div style="display:none;" id="progression_container">
+			</div>
+	 	</div><!--/span-->
+	</div><!--/row-->
+</div><!--/.fluid-container-->
+
+
+<!-- dependencies -->
+<script type="text/javascript" src="/javascripts/libraries/jsbn/jsbn.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/prng4.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/rng.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/crypto-js/sha256.js"></script>
+
+<!-- library -->
+<script type="text/javascript" src="/javascripts/swap/dm/Attribute.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Credential.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Commitment.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/CommitmentOpening.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/DomNym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/MasterSecret.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Nym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Value.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Values.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/structure/AttributeStructure.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/structure/CredentialStructure.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/IssuanceSpec.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/Message.js"></script>
+<script type="text/javascript" src="/javascripts/swap/issuance/Recipient.js"></script>
+<script type="text/javascript" src="/javascripts/swap/key/IssuerPublicKey.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Identifier.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Proof.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/ProofSpec.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/Prover.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/predicates/Predicate.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/predicates/CLPredicate.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValue.js"></script>
+<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValuesProveCL.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/ASN1.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Constants.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/GroupParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Parser.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/StructureStore.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/SystemParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Utils.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/perf/Exponentiation.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/perf/FixedBaseWindowing.js"></script>
+
+<!-- credential system -->
+<script type="text/javascript" src="/javascripts/credsystem/CredSystem.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/JSONConverter.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Locations.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Store.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Utils.js"></script>
+
+
+<input type="hidden" id="message" value="<%= message %>" />
+<input type="hidden" id="step" value="<%= step %>" />
+<input type="hidden" id="fixedBaseWindowingMap" value="<%= fixedBaseWindowingMap %>" />
+<script type="text/javascript">
+	// ask the user to choose an existing master secret
+	var masterSecretMap = Store.loadMasterSecretMap();
+	
+	var masterSecretSelectionList = document.createElement("select");
+	masterSecretSelectionList.setAttribute("id", "master_secret_selection_list");
+	
+	var option = null;
+	for(var key in masterSecretMap) {
+		option = document.createElement("option");
+		option.appendChild(document.createTextNode(key));
+		option.setAttribute("value", masterSecretMap[key].toJSONString());
+		masterSecretSelectionList.appendChild(option);
+	}
+	
+	var masterSecretSelectionListContainer = document.createElement("div");
+	masterSecretSelectionListContainer.setAttribute("class", "controls");
+	masterSecretSelectionListContainer.appendChild(masterSecretSelectionList);
+	
+	var masterSecretSelectionListLabel = document.createElement("label");
+	masterSecretSelectionListLabel.setAttribute("class", "control-label");
+	masterSecretSelectionListLabel.setAttribute("for", "master_secret_selection_list");
+	masterSecretSelectionListLabel.appendChild(document.createTextNode("Master secret"));
+	
+	var masterSecretGroupContainer = document.createElement("div");
+	masterSecretGroupContainer.setAttribute("class", "control-group");
+	masterSecretGroupContainer.appendChild(masterSecretSelectionListLabel);
+	masterSecretGroupContainer.appendChild(masterSecretSelectionListContainer);
+	
+	var personalData = document.getElementById("private_data_choice");
+	personalData.appendChild(masterSecretGroupContainer);
+	
+	
+	// Issuance protocol (client side)
+	var step = document.getElementById("step").value;
+		
+	if (step == "round1") {
+		// update progression
+		Utils.updateProgression(10);
+		
+    // recover message from JSON string
+    var messageJSONString = document.getElementById("message").value;
+    var messageJSONObject = eval('(' + messageJSONString + ')');
+    var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
+
+    // load recipient from temporary memory
+    var recipient = Store.loadRecipient();
+
+		// init precomputed bases if necessary
+		if(Constants.FAST_EXPO) {
+	    // load fixed base windowing map
+	    var fixedBaseWindowingMapJSONString = document.getElementById("fixedBaseWindowingMap").value;
+	    var fixedBaseWindowingMapJSONObject = eval('(' + fixedBaseWindowingMapJSONString + ')');
+	    // convert to map of FixedBaseWindowing objects
+	    var fixedBaseWindowingMap = new Object();
+	    for(var key in fixedBaseWindowingMapJSONObject) {
+				fixedBaseWindowingMap[key] = FixedBaseWindowing.fromJSONObject(fixedBaseWindowingMapJSONObject[key]);
+			}
+			recipient.setFixedBaseWindowingMap(fixedBaseWindowingMap);
+
+			// update progression
+			Utils.updateProgression(25);
+		}
+		
+    // execute round 1
+    var msgToIssuer = recipient.round1(msgFromIssuer);
+
+    // store recipient in temporary memory for later use
+   	Store.save(recipient);
+
+		// update progression
+		Utils.updateProgression(60);
+		
+    // send message to issuer
+    var msgToIssuerJSONString = msgToIssuer.toJSONString();
+    Utils.postToURL('/issue', msgToIssuerJSONString, "round2");
+
+  } else if (step == "round3") {
+		// update progression
+		Utils.updateProgression(95);
+		
+    // recover message from JSON string
+    var messageJSONString = document.getElementById("message").value;
+    var messageJSONObject = eval('(' + messageJSONString + ')');
+    var msgFromIssuer = Message.fromJSONObject(messageJSONObject);
+
+    // load recipient from temporary memory
+    var recipient = Store.loadRecipient();
+
+    // execute round 3
+		var credential = recipient.round3(msgFromIssuer);
+		
+		// update progression
+		Utils.updateProgression(100);
+
+    // ask the user to save the issued credential
+		var text = "Congratulations, a new credential has been issued to you."
+			+ " If you want to save it, please enter a name in the box below.";
+		var data = credential;
+		var nextStep = "/prove";
+		var nextStepText = "Verify your credential now";
+		
+    var successBox = document.getElementById("progression_container");
+    successBox.setAttribute("class", "alert alert-success");
+		successBox.setAttribute("style", "display:block;");
+		
+		var form = document.createElement("form");
+		form.setAttribute("class", "form-inline");
+		
+		form.appendChild(document.createElement("br"));
+		
+		var textContainer = document.createElement("p");
+		var text = document.createTextNode(text);
+		textContainer.appendChild(text);
+		form.appendChild(textContainer);
+		
+		var credName = document.createElement("input");
+		credName.setAttribute("type", "text");
+		credName.setAttribute("id", "name");
+		form.appendChild(credName);
+		
+		form.appendChild(document.createElement("br"));
+		form.appendChild(document.createElement("br"));
+		
+		// submit button
+		var submitButton = document.createElement("input");
+		submitButton.setAttribute("type", "button");
+		submitButton.setAttribute("value", "Submit");
+		submitButton.setAttribute("class", "btn");
+		submitButton.setAttribute("onclick", "javascript:Store.save(data)");
+		var submitButtonContainer = document.createElement("td");
+		submitButtonContainer.appendChild(submitButton);
+
+		// button-link to next step
+		var nextButton = document.createElement("a");
+		nextButton.setAttribute("class", "btn");
+		nextButton.setAttribute("href", nextStep);
+		text = document.createTextNode(nextStepText);
+		nextButton.appendChild(text);
+		var nextButtonContainer = document.createElement("td");
+		nextButtonContainer.appendChild(nextButton);
+
+		// add cells to row
+		var buttonToolbarRow = document.createElement("tr");
+		buttonToolbarRow.appendChild(submitButtonContainer);
+		buttonToolbarRow.appendChild(nextButtonContainer);
+
+		// add row to table body
+		var buttonToolbarBody = document.createElement("tbody");
+		buttonToolbarBody.appendChild(buttonToolbarRow);
+
+		// add table body to table
+		var buttonToolbar = document.createElement("table");
+		buttonToolbar.appendChild(buttonToolbarBody);
+
+		// add table to form
+		form.appendChild(buttonToolbar);
+		
+    successBox.appendChild(form);
+}
+
+// Set gender information
+function setGenderInformation(gender) {
+	document.getElementById("gender").value = gender;
+}
+</script>
