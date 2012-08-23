@@ -3,9 +3,9 @@
 
 	<Attributes>
 		<Attribute issuanceMode="hidden" name="firstName" type="string" />
-		<Attribute issuanceMode="committed" name="lastName" type="string" />
+		<Attribute issuanceMode="hidden" name="lastName" type="string" />
 		<Attribute issuanceMode="hidden" name="gender" type="string" />
-		<Attribute issuanceMode="committed" name="dateOfBirth" type="int" />
+		<Attribute issuanceMode="hidden" name="dateOfBirth" type="int" />
 		<Attribute issuanceMode="hidden" name="nationality" type="string" />
 	</Attributes>
 

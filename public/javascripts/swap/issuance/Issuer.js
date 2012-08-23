@@ -1,3 +1,23 @@
+/*
+ * Copyright 2012 Guillaume Bailly
+ * 
+ * This file is part of SW@P.
+ * 
+ * SW@P is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SW@P is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 Issuer = function(keyPair, issuanceSpec, pseudonym, domNym, values) {
 	/** Convenience: Group parameters. */
 	this.groupParams = keyPair.getPublicKey().getGroupParams();
@@ -49,12 +69,11 @@ Issuer.prototype.round2 = function(message) {
 	
 	// 2.0.0.1
 	var nymHat = null;
-	if (this.nym != null) { // TODO fixed base windowing
+	if (this.nym != null) {
 		nymHat = Commitment.computeCommitment(this.groupParams, mHat_1, proof1
 				.getCommonValue(IssuanceSpec.rHat));
 		nymHat = Utils.expMul(nymHat, this.nym, negC, capGamma);
 	}
-	// console.log(nymHat);
 
 	// 2.0.0.2
 	var domNymHat = null;
@@ -77,12 +96,9 @@ Issuer.prototype.round2 = function(message) {
 		expoList.push(new Exponentiation(capR[IssuanceSpec.MASTER_SECRET_INDEX], mHat_1, n));
 	}
 	var capUHat = Utils.multiExpMul(expoList, n);
-	// console.log('capUHat:' + capUHat);
 
 	// 2.0.2 compute capCHat
 	var capCHat = this.getCHat(negC, sValues);
-	// for (var i in capCHat)
-	// console.log('capCHat[' + i + ']:' + capCHat[i]);
 	
 	// 2.0.3 compute the Fiat-Shamir hash
 	var domNymNym = null;
@@ -92,28 +108,27 @@ Issuer.prototype.round2 = function(message) {
 	var cHat = Utils.computeFSChallenge(this.systemParams, this.issuanceSpec
 			.getContext(), capU, attrStructs, this.values, this.nym, domNymNym,
 			capUHat, capCHat, nymHat, domNymHat, this.nonce1);
-	 //console.log("cHat:" + cHat.toString());		
-	 //console.log("c:" + c.toString());
 	
-	if (!cHat.equals(c))
+	if (!cHat.equals(c)) {
 		return null;
+	}
 
 	// 2.0.4
 	// check that vHatPrime has right bit length.
-	// document.write("<p>vHatPrime:" + vHatPrime + "</p>");
-	var vHatPrimeBitLength = this.systemParams.getL_n() + 2
+	var bitLength = this.systemParams.getL_n() + 2
 			* this.systemParams.getL_Phi() + this.systemParams.getL_H() + 1;
-	if (!Utils.isInIntervalSymmetric(vHatPrime, vHatPrimeBitLength))
+	if (!Utils.isInIntervalSymmetric(vHatPrime, bitLength)) {
 		return null;
+	}
 	// check that mHat and rHat are in correct interval.
-	if(!this.checkInterval(sValues))
+	if(!this.checkInterval(sValues)) {
 		return null;
+	}
 
 	// 2.1 we can now start generating the signature.
 
 	// 2.1.1 choose e
 	var e = Utils.chooseE(this.systemParams);
-	// document.write("<p>e:" + e + "</p>");
 	
 	// 2.1.2
 	// choose vTilde
@@ -165,7 +180,7 @@ Issuer.prototype.round2 = function(message) {
 	return new Message(issuanceProtocolValues, p2, null);
 };
 
-Issuer.prototype.addHatAttrExpos = function(attrStructs, sValues, baseStruct, n, expos) {
+Issuer.prototype.addHatAttrExpos = function(attrStructs, sValues, baseStruct, n, expoList) {
 	for ( var i in attrStructs) {
 		var attrStruct = attrStructs[i];
 		if (attrStruct.getIssuanceMode() != IssuanceMode.KNOWN) {
@@ -173,9 +188,9 @@ Issuer.prototype.addHatAttrExpos = function(attrStructs, sValues, baseStruct, n,
 			var mHat = sValues[name].getValue();
 			var keyIndex = attrStruct.getPubKeyIndex();
 			if(Constants.FAST_EXPO) {
-				expos.push(new Exponentiation(baseStruct["R_" + keyIndex], mHat, null));
+				expoList.push(new Exponentiation(baseStruct["R_"+keyIndex], mHat, null));
 			} else {
-				expos.push(new Exponentiation(baseStruct[keyIndex], mHat, n));
+				expoList.push(new Exponentiation(baseStruct[keyIndex], mHat, n));
 			}
 		}
 	}
@@ -232,10 +247,10 @@ Issuer.prototype.computeQ = function(capS, capU, capZ, baseStruct, vPrimePrime, 
 	var expoList = new Array();
 	var attrStructs = this.credStruct
 			.getAttributeStructures(IssuanceMode.KNOWN);
-	for ( var i in attrStructs) {
+	for ( var i=0; i<attrStructs.length; i++) {
 		var attrStruct = attrStructs[i];
 		if(Constants.FAST_EXPO) {
-			expoList.push(new Exponentiation(baseStruct["R_" + attrStruct.getPubKeyIndex()],
+			expoList.push(new Exponentiation(baseStruct["R_"+attrStruct.getPubKeyIndex()],
 				this.values.getValue(attrStruct), null));
 			expoList.push(new Exponentiation(baseStruct["S"], vPrimePrime, null));
 		} else {

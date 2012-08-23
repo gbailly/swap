@@ -1,3 +1,23 @@
+/*
+ * Copyright 2012 Guillaume Bailly
+ * 
+ * This file is part of SW@P.
+ * 
+ * SW@P is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SW@P is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 Recipient = function(issuanceSpec, pseudonym, pseudonymName, domNymName, masterSecret, values) {
 	if (masterSecret == null || issuanceSpec == null) {
 		alert("Recipient instantiated without the necessary values.");
@@ -167,7 +187,7 @@ Recipient.prototype.addAttrExpos = function(attrStructs, baseStruct, n, expoList
 Recipient.prototype.setMTildes = function(attrStructs) {
 	var bitLength = this.systemParams.getL_m() + this.systemParams.getL_Phi()
 			+ this.systemParams.getL_H() + 1;
-	for (var i =0; i<attrStructs.length; i++) {
+	for (var i=0; i<attrStructs.length; i++) {
 		var attrStruct = attrStructs[i];
 		if (attrStruct.getIssuanceMode() != IssuanceMode.KNOWN) {
 			this.mTildes[attrStruct.getName()] = Utils.computeRandomNumberSymmetric(bitLength);
@@ -193,7 +213,7 @@ Recipient.prototype.getCapCTilde = function(attrStructs) {
 	var bitLength = this.systemParams.getL_n() + 2
 			* this.systemParams.getL_Phi() + this.systemParams.getL_H();
 	var capCTildes = new Object();
-	for ( var i =0; i<attrStructs.length; i++) {
+	for ( var i=0; i<attrStructs.length; i++) {
 		var attrStruct = attrStructs[i];
 		if (attrStruct.getIssuanceMode() == IssuanceMode.COMMITTED) {
 			var rTilde = Utils.computeRandomNumberSymmetric(bitLength);

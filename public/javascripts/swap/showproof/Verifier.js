@@ -1,3 +1,23 @@
+/*
+ * Copyright 2012 Guillaume Bailly
+ * 
+ * This file is part of SW@P.
+ * 
+ * SW@P is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * SW@P is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 Verifier = function(proofSpec, proof, nonce1, commitmentMap) {
   this.proofSpec = proofSpec;
   if(proofSpec != null) {
@@ -17,18 +37,6 @@ Verifier = function(proofSpec, proof, nonce1, commitmentMap) {
 	this.validate();
 };
 
-Verifier.prototype.setFixedBaseWindowingMap = function(fixedBaseWindowingMap) {
-	this.fixedBaseWindowingMap = fixedBaseWindowingMap;
-};
-
-Verifier.prototype.getNonce = function() {
-  return this.nonce1;
-};
-
-Verifier.prototype.setProof = function(proof) {
-  this.proof = proof;
-};
-
 Verifier.prototype.validate = function() {
 	var predicateList = this.proofSpec.getPredicates();
 	for ( var i in predicateList) {
@@ -46,6 +54,18 @@ Verifier.prototype.validate = function() {
 			alert("Wrong predicate type.");
 		}
 	}
+};
+
+Verifier.prototype.setFixedBaseWindowingMap = function(fixedBaseWindowingMap) {
+	this.fixedBaseWindowingMap = fixedBaseWindowingMap;
+};
+
+Verifier.prototype.getNonce = function() {
+  return this.nonce1;
+};
+
+Verifier.prototype.setProof = function(proof) {
+  this.proof = proof;
 };
 
 Verifier.prototype.verify = function() {
@@ -72,7 +92,15 @@ Verifier.prototype.verify = function() {
       default:
         alert("Unimplemented predicate.");
     }
-  }
+  }/*
+	console.log("c:" + this.proof.getChallenge());
+	console.log("cHat:" + this.computeChallengeHat());*/
+  // [spec: verifyProof 2.] Compute the challenge
+  this.challengeHat = this.computeChallengeHat();
+
+  // [spec: verifyProof 3.]
+  //if (!this.challengeHat.equals(this.proof.getChallenge()))
+  //  return false;
 
   return success;
 };
@@ -145,22 +173,20 @@ Verifier.prototype.verifyCL = function(credStruct, predicate) {
 			} else {
 				productRevealedExpoList.push(new Exponentiation(capR[keyIndex], sValue, n));
 			}
-      
     }
   }
   
   // [spec: VerifyCL 2.] Compute tHat
 
-  //  compute divisor
+  // compute divisor
   var divisor = Utils.multiExpMul(productRevealedExpoList, n);
-  var capAPrimePower = capAPrime.modPow(BigInteger.ONE
+  divisor = Utils.expMul(divisor, capAPrime, BigInteger.ONE
     .shiftLeft(this.systemParams.getL_e() - 1), n);
-  divisor = divisor.multiply(capAPrimePower).mod(n);
   divisor = divisor.modInverse(n);
 
   // compute first part
   var tHat = issuerPubKey.getCapZ();
-  tHat = tHat.multiply(divisor).mod(n);
+	tHat = tHat.multiply(divisor).mod(n);
   tHat = Utils.modPow(tHat, this.negC, n);
 
   // compute second part (unrevealed identifiers were considered above)
