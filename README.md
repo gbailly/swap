@@ -4,9 +4,9 @@ SW@P
 Description
 -----------
 
-* ```public/javascripts/swap/``` contains the library (SW@P)
-* ```public/javascripts/credsystem/``` contains the demo
-* ```resources/``` contains the parameters and specifications required for the demo
+* ```public/javascripts/swap/``` contains the library (SW@P).
+* ```public/javascripts/credsystem/``` contains the demo.
+* ```resources/``` contains the parameters and specifications required for the demo.
 * ```server/``` contains the files required by the server to operate.
 * ```views/``` contains the files required by the client to interact with the server.
 
@@ -24,7 +24,7 @@ Then you can proceed with the following steps:
 
 3. Now you can run the server by entering ```$ node swap.js```.
 
-4. You are ready to start playing with the tool.
+4. You are ready to start playing with the tool on port 5000.
 
 
 Contact
