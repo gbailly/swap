@@ -12,7 +12,6 @@ logs
 results
 
 node_modules
-npm-debug.logProcfile
+npm-debug.log
+Procfile
 node_modules/
-package.json
-package.json
