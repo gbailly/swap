@@ -15,7 +15,6 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 Commitment = function(value, capR_0, capS, n, baseList, issuerPubKey) {
