@@ -3,7 +3,7 @@
 	
     <div class="span8">
       <div class="hero-unit">
-				<h1>Set up the environment</h1>
+				<h1>Setting up</h1>
 				<br />
 				<p style="text-align: justify;">In this first step, you will generate a new secret key necessary that will ensure the security of further operations. Optionally, you will have the opportunity to generate a pseudonym linked to this secret key.</p>
 			</div>
@@ -46,38 +46,14 @@
 <script type="text/javascript" src="/javascripts/libraries/crypto-js/sha256.js"></script>
 
 <!-- library -->
-<script type="text/javascript" src="/javascripts/swap/dm/Attribute.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/Credential.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/Commitment.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/CommitmentOpening.js"></script>
 <script type="text/javascript" src="/javascripts/swap/dm/DomNym.js"></script>
 <script type="text/javascript" src="/javascripts/swap/dm/MasterSecret.js"></script>
 <script type="text/javascript" src="/javascripts/swap/dm/Nym.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/Value.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/Values.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/structure/AttributeStructure.js"></script>
-<script type="text/javascript" src="/javascripts/swap/dm/structure/CredentialStructure.js"></script>
-<script type="text/javascript" src="/javascripts/swap/issuance/IssuanceSpec.js"></script>
-<script type="text/javascript" src="/javascripts/swap/issuance/Message.js"></script>
-<script type="text/javascript" src="/javascripts/swap/issuance/Recipient.js"></script>
-<script type="text/javascript" src="/javascripts/swap/key/IssuerPublicKey.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/Identifier.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/Proof.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/ProofSpec.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/Prover.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/predicates/Predicate.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/predicates/CLPredicate.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValue.js"></script>
-<script type="text/javascript" src="/javascripts/swap/showproof/sval/SValuesProveCL.js"></script>
-<script type="text/javascript" src="/javascripts/swap/utils/ASN1.js"></script>
-<script type="text/javascript" src="/javascripts/swap/utils/Constants.js"></script>
 <script type="text/javascript" src="/javascripts/swap/utils/GroupParameters.js"></script>
 <script type="text/javascript" src="/javascripts/swap/utils/Parser.js"></script>
 <script type="text/javascript" src="/javascripts/swap/utils/StructureStore.js"></script>
 <script type="text/javascript" src="/javascripts/swap/utils/SystemParameters.js"></script>
 <script type="text/javascript" src="/javascripts/swap/utils/Utils.js"></script>
-<script type="text/javascript" src="/javascripts/swap/utils/perf/Exponentiation.js"></script>
-<script type="text/javascript" src="/javascripts/swap/utils/perf/FixedBaseWindowing.js"></script>
 
 <!-- credential system -->
 <script type="text/javascript" src="/javascripts/credsystem/CredSystem.js"></script>
@@ -111,7 +87,7 @@
 
 		// ask the user to save the generated master secret
 		var text = "Congratulations, you have generated a new master secret."
-			+ " If you want to save it, please enter a name in the box below and click the button.";
+			+ " If you want to save it, please enter a name in the box below and click the Save button.";
 		var data = masterSecret;
 		var nextStep = "/issue";
 		var nextStepText = "Get a credential now";
@@ -137,10 +113,10 @@
 		form.appendChild(document.createElement("br"));
 		form.appendChild(document.createElement("br"));
 
-		// submit button
+		// save button
 		var submitButton = document.createElement("input");
 		submitButton.setAttribute("type", "button");
-		submitButton.setAttribute("value", "Submit");
+		submitButton.setAttribute("value", "Save");
 		submitButton.setAttribute("class", "btn");
 		submitButton.setAttribute("onclick", "javascript:Store.save(data)");
 		var submitButtonContainer = document.createElement("td");

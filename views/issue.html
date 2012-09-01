@@ -157,7 +157,7 @@
 		
 	if (step == "round1") {
 		// update progression
-		Utils.updateProgression(10);
+		Utils.updateProgression(10, "Please wait while a new credential is being issued...");
 		
     // recover message from JSON string
     var messageJSONString = document.getElementById("message").value;
@@ -180,7 +180,7 @@
 			recipient.setFixedBaseWindowingMap(fixedBaseWindowingMap);
 
 			// update progression
-			Utils.updateProgression(25);
+			Utils.updateProgression(25, "Please wait while a new credential is being issued...");
 		}
 		
     // execute round 1
@@ -190,7 +190,7 @@
    	Store.save(recipient);
 
 		// update progression
-		Utils.updateProgression(60);
+		Utils.updateProgression(60, "Please wait while a new credential is being issued...");
 		
     // send message to issuer
     var msgToIssuerJSONString = msgToIssuer.toJSONString();
@@ -198,7 +198,7 @@
 
   } else if (step == "round3") {
 		// update progression
-		Utils.updateProgression(95);
+		Utils.updateProgression(95, "Please wait while a new credential is being issued...");
 		
     // recover message from JSON string
     var messageJSONString = document.getElementById("message").value;
@@ -212,11 +212,11 @@
 		var credential = recipient.round3(msgFromIssuer);
 		
 		// update progression
-		Utils.updateProgression(100);
+		Utils.updateProgression(100, "Please wait while a new credential is being issued...");
 
     // ask the user to save the issued credential
 		var text = "Congratulations, a new credential has been issued to you."
-			+ " If you want to save it, please enter a name in the box below.";
+			+ " If you want to save it, please enter a name in the box below and click the Save button.";
 		var data = credential;
 		var nextStep = "/prove";
 		var nextStepText = "Verify your credential now";
@@ -243,10 +243,10 @@
 		form.appendChild(document.createElement("br"));
 		form.appendChild(document.createElement("br"));
 		
-		// submit button
+		// save button
 		var submitButton = document.createElement("input");
 		submitButton.setAttribute("type", "button");
-		submitButton.setAttribute("value", "Submit");
+		submitButton.setAttribute("value", "Save");
 		submitButton.setAttribute("class", "btn");
 		submitButton.setAttribute("onclick", "javascript:Store.save(data)");
 		var submitButtonContainer = document.createElement("td");
