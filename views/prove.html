@@ -121,7 +121,7 @@
   var successString = document.getElementById("success").value;
   if(nonceString != 'null' && successString == 'null') {
 		// update progression
-		Utils.updateProgression(10);
+		Utils.updateProgression(10, "Please wait while your credential is being verified...");
 		// load prover from temporary memory
 		var prover = Store.loadProver();
 		// init map of precomputed powers for the bases
@@ -136,7 +136,7 @@
 			prover.setFixedBaseWindowingMap(fixedBaseWindowingMap);
 			
 			// update progression
-			Utils.updateProgression(25);
+			Utils.updateProgression(25, "Please wait while your credential is being verified...");
 		}
     // first get the nonce (done by the verifier)
     var nonce = BigInteger.fromJSONObject(nonceString);
@@ -147,13 +147,13 @@
     // convert into JSON string
     var proofJSONString = proof.toJSONString();
 		// update progression
-		Utils.updateProgression(95);
+		Utils.updateProgression(95, "Please wait while your credential is being verified...");
     // send proof and pass control for verification
     Utils.postToURL("/prove", proofJSONString, "verify");
 
   } else if (nonceString == 'null' && successString == 'true') {
 		// update progression
-		Utils.updateProgression(100);
+		Utils.updateProgression(100), "Please wait while your credential is being verified...";
     // display success box
     var successBox = document.getElementById("progression_container");
     successBox.setAttribute("class", "alert alert-success");
@@ -180,7 +180,7 @@
 		
   } else if (nonceString == 'null' && successString == 'false') {
 		// update progression
-		Utils.updateProgression(100);
+		Utils.updateProgression(100, "Please wait while your credential is being verified...");
     // display failure box
     var successBox = document.getElementById("progression_container");
     successBox.setAttribute("class", "alert alert-error");
