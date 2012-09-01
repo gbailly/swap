@@ -1,0 +1,153 @@
+<div class="container">
+  <div class="row">
+	
+    <div class="span8">
+      <div class="hero-unit">
+				<h1>Setting up</h1>
+				<br />
+				<p style="text-align: justify;">In this first step, you will generate a new secret key necessary that will ensure the security of further operations. Optionally, you will have the opportunity to generate a pseudonym linked to this secret key.</p>
+			</div>
+    </div><!--/span-->
+
+		<div class="span4">
+			<form class="well form-horizontal" action="javascript:CredSystem.generateMasterSecret()">
+				<legend>Please fill in...</legend>
+				
+				<p style="text-align: justify;">This tab will allow you to generate a new master secret. If you want a pseudonym linked to this key, please enter a name for it in the box below.</p>
+				
+				<br />
+				
+				<table>
+				  <tbody>
+				    <tr>
+				      <td class="span8">Pseudonym</td>
+				      <td><input type="text" class="input-medium" id="nym"></td>
+				    </tr>
+				  </tbody>
+				</table>
+				
+				<br />
+				
+				<input type="submit" value="Generate now" class="btn">
+			</form>
+			
+			<!-- display the progression -->
+			<div style="display:none;" id="progression_container">
+			</div>
+	 	</div><!--/span-->
+	</div><!--/row-->
+</div><!--/.fluid-container-->
+
+
+<!-- dependencies -->
+<script type="text/javascript" src="/javascripts/libraries/jsbn/jsbn.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/prng4.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/jsbn/rng.js"></script>
+<script type="text/javascript" src="/javascripts/libraries/crypto-js/sha256.js"></script>
+
+<!-- library -->
+<script type="text/javascript" src="/javascripts/swap/dm/DomNym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/MasterSecret.js"></script>
+<script type="text/javascript" src="/javascripts/swap/dm/Nym.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/GroupParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Parser.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/StructureStore.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/SystemParameters.js"></script>
+<script type="text/javascript" src="/javascripts/swap/utils/Utils.js"></script>
+
+<!-- credential system -->
+<script type="text/javascript" src="/javascripts/credsystem/CredSystem.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/JSONConverter.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Locations.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Store.js"></script>
+<script type="text/javascript" src="/javascripts/credsystem/utils/Utils.js"></script>
+
+
+<!-- Generation protocol -->
+<input type="hidden" id="step" value="<%= step %>" />
+<script type="text/javascript">
+	var step = document.getElementById("step").value;
+	if(step == "gen") {
+		// init system parameters and group parameters
+		var groupParams = Locations.initSystem();
+		
+		// create new master secret
+		var masterSecret = new MasterSecret(null, groupParams, null, null);
+
+		// get the name entered and create a new pseudonym
+		var nymMap = null;
+		var nymName = document.getElementById("nym").value;
+		if(nymName != null && Utils.trimString(nymName) != "") {
+			nymMap = new Object();
+			nymMap[nymName] = new Nym(groupParams, masterSecret.getValue(), nymName);
+		}
+
+		// update the master secret
+		masterSecret.setNymMap(nymMap);
+
+		// ask the user to save the generated master secret
+		var text = "Congratulations, you have generated a new master secret."
+			+ " If you want to save it, please enter a name in the box below and click the Save button.";
+		var data = masterSecret;
+		var nextStep = "/issue";
+		var nextStepText = "Get a credential now";
+	  var successBox = document.getElementById("progression_container");
+	  successBox.setAttribute("class", "alert alert-success");
+		successBox.setAttribute("style", "display:block;");
+
+		var form = document.createElement("form");
+		form.setAttribute("class", "form-inline");
+
+		form.appendChild(document.createElement("br"));
+
+		var textContainer = document.createElement("p");
+		var textElement = document.createTextNode(text);
+		textContainer.appendChild(textElement);
+		form.appendChild(textContainer);
+
+		var masterSecretName = document.createElement("input");
+		masterSecretName.setAttribute("type", "text");
+		masterSecretName.setAttribute("id", "name");
+		form.appendChild(masterSecretName);
+
+		form.appendChild(document.createElement("br"));
+		form.appendChild(document.createElement("br"));
+
+		// save button
+		var submitButton = document.createElement("input");
+		submitButton.setAttribute("type", "button");
+		submitButton.setAttribute("value", "Save");
+		submitButton.setAttribute("class", "btn");
+		submitButton.setAttribute("onclick", "javascript:Store.save(data)");
+		var submitButtonContainer = document.createElement("td");
+		submitButtonContainer.appendChild(submitButton);
+
+		// button-link to next step
+		var nextButton = document.createElement("a");
+		nextButton.setAttribute("class", "btn");
+		nextButton.setAttribute("href", nextStep);
+		text = document.createTextNode(nextStepText);
+		nextButton.appendChild(text);
+		var nextButtonContainer = document.createElement("td");
+		nextButtonContainer.appendChild(nextButton);
+
+		// add cells to row
+		var buttonToolbarRow = document.createElement("tr");
+		buttonToolbarRow.appendChild(submitButtonContainer);
+		buttonToolbarRow.appendChild(nextButtonContainer);
+
+		// add row to table body
+		var buttonToolbarBody = document.createElement("tbody");
+		buttonToolbarBody.appendChild(buttonToolbarRow);
+
+		// add table body to table
+		var buttonToolbar = document.createElement("table");
+		buttonToolbar.appendChild(buttonToolbarBody);
+
+		// add table to form
+		form.appendChild(buttonToolbar);
+
+		// add form to box
+	  successBox.appendChild(form);
+	}
+</script>
