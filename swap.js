@@ -48,9 +48,9 @@ var Values              = require('./public/javascripts/swap/dm/Values.js');
 var Verifier            = require('./public/javascripts/swap/showproof/Verifier.js');
 
 // load credential system
-                          require('./public/javascripts/credsystem/utils/JSONConverter.js');
-var Locations           = require('./public/javascripts/credsystem/utils/Locations.js');
-                          require('./public/javascripts/credsystem/utils/Utils.js');
+                require('./public/javascripts/credsystem/utils/JSONConverter.js');
+var Locations = require('./public/javascripts/credsystem/utils/Locations.js');
+                require('./public/javascripts/credsystem/utils/Utils.js');
 
 
 app = module.exports = express.createServer();

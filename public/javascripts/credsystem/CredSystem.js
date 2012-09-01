@@ -65,7 +65,7 @@ CredSystem.issueCredential = function() {
 	Store.save(recipient);
 	
 	// update progression
-	Utils.updateProgression(5);
+	Utils.updateProgression(5, "Please wait while a new credential is being issued...");
 	
 	// run the issuance protocol
 	Utils.postToURL('/issue', valuesIssuer.toJSONString(), "round0");
@@ -96,7 +96,7 @@ CredSystem.prove = function() {
 	Store.save(prover);
 	
 	// update progression
-	Utils.updateProgression(5);
+	Utils.updateProgression(5, "Please wait while your credential is being verified...");
 
   // run the prove protocol
 	Utils.postToURL('/prove', null, "proof");

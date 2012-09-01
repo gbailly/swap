@@ -57,7 +57,7 @@ Utils.stringStartsWith = function(string, prefix) {
  * Operations for the views.
  */
 
-Utils.updateProgression = function(percentage) {
+Utils.updateProgression = function(percentage, msg) {
 	var progressBarContainer = document.getElementById("progression_container");
 	progressBarContainer.setAttribute("class", "progress");
 	progressBarContainer.setAttribute("style", "display:inline;");
@@ -66,7 +66,7 @@ Utils.updateProgression = function(percentage) {
 	if(msgContainer == null) {
 		var msgContainer = document.createElement("p");
 		msgContainer.setAttribute("id", "msg_container");
-		var msg = document.createTextNode("Please wait while a new credential is being generated...");
+		var msg = document.createTextNode(msg);
 		msgContainer.appendChild(msg);
 		progressBarContainer.appendChild(msgContainer);
 	}
