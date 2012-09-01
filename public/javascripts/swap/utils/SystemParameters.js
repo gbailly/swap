@@ -15,7 +15,6 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 SystemParameters = function(l_n, l_Gamma, l_rho, l_m, l_res, l_e, l_ePrime, l_v, l_Phi, l_k, l_H, l_r, l_pt, l_enc) {
