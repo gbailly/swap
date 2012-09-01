@@ -15,7 +15,6 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 Recipient = function(issuanceSpec, pseudonym, pseudonymName, domNymName, masterSecret, values) {
@@ -187,7 +186,7 @@ Recipient.prototype.addAttrExpos = function(attrStructs, baseStruct, n, expoList
 Recipient.prototype.setMTildes = function(attrStructs) {
 	var bitLength = this.systemParams.getL_m() + this.systemParams.getL_Phi()
 			+ this.systemParams.getL_H() + 1;
-	for (var i=0; i<attrStructs.length; i++) {
+	for (var i =0; i<attrStructs.length; i++) {
 		var attrStruct = attrStructs[i];
 		if (attrStruct.getIssuanceMode() != IssuanceMode.KNOWN) {
 			this.mTildes[attrStruct.getName()] = Utils.computeRandomNumberSymmetric(bitLength);
@@ -213,7 +212,7 @@ Recipient.prototype.getCapCTilde = function(attrStructs) {
 	var bitLength = this.systemParams.getL_n() + 2
 			* this.systemParams.getL_Phi() + this.systemParams.getL_H();
 	var capCTildes = new Object();
-	for ( var i=0; i<attrStructs.length; i++) {
+	for ( var i =0; i<attrStructs.length; i++) {
 		var attrStruct = attrStructs[i];
 		if (attrStruct.getIssuanceMode() == IssuanceMode.COMMITTED) {
 			var rTilde = Utils.computeRandomNumberSymmetric(bitLength);

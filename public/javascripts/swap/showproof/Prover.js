@@ -15,7 +15,6 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with SW@P.  If not, see <http://www.gnu.org/licenses/>.
- * 
  */
 
 Prover = function(masterSecret, credentialMap, proofSpec, nonce1, commOpeningMap) {
@@ -250,42 +249,6 @@ Prover.prototype.proveCL = function(credential, predicate, challenge) {
 		// note that we wrap the common value A' into a tagged common value.
 		this.commonValueMap[predicate.getTempCredName()] = capAPrime;
 		
-		// -- DONE --
-			var c = this.computeChallenge();
-		
-		var expoList2 = new Array();
-		var expoList3 = new Array();
-		
-		var attrList = credential.getAttributes();
-		for ( var i=0; i<attrList.length; i++) {
-			var attr = attrList[i];
-			var attrName = attr.getName();
-			var identifier = predicate.getIdentifier(attrName);
-			if (identifier.isRevealed()) {
-				// recovering the randomness for the identifiers computed in step 0 of buildProof
-				expoList2.push(new Exponentiation(capR[attr.getPubKeyIndex()], identifier.getValue(), n));
-			} else {
-				expoList3.push(new Exponentiation(capR[attr.getPubKeyIndex()], c.multiply(identifier.getValue()), n));
-			}
-		}
-		expoList3.push(new Exponentiation(capR[IssuanceSpec.MASTER_SECRET_INDEX], c.multiply(this.masterSecret.getValue()), n));
-		
-		var divisor = Utils.multiExpMul(expoList2, n);
-		divisor = Utils.expMul(divisor, capAPrime, BigInteger.ONE.shiftLeft(this.systemParams.getL_e() - 1), n);
-		divisor = divisor.modInverse(n);
-		
-		var tHat = issuerPubKey.getCapZ();
-		tHat = tHat.multiply(divisor).mod(n);
-		tHat = Utils.modPow(tHat, c.negate(), n);
-		
-		// right part
-		expoList3.push(new Exponentiation(this.commonValueMap[predicate.getTempCredName()], c.multiply(ePrime), n));
-		expoList3.push(new Exponentiation(capS, c.multiply(vPrime), n));
-		var prod = Utils.multiExpMul(expoList3, n);
-		tHat = tHat.multiply(prod).mod(n);
-		
-		document.write("<p>" + tHat.multiply(capZTilde).mod(n) + "</p>");
-		
 	} else {
 		var state = this.stateMap[predicate.getTempCredName()];
 
@@ -314,7 +277,7 @@ Prover.prototype.proveCL = function(credential, predicate, challenge) {
 
 		// add s-value for master secret
 		var s_m = Utils.computeResponse(this.masterSecret.getMTilde_1(),
-			challenge, this.masterSecret.getValue());
+			challenge, this.masterSecret.getValue())
 		this.sValueMap[IssuanceSpec.MASTER_SECRET_NAME] = new SValue(s_m);
 
 		var sValues = new SValue(new SValuesProveCL(eHat, vHatPrime));
